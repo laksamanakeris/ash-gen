@@ -6,8 +6,8 @@ end
 defmodule Mix.Tasks.Ash.Gen.ContextTest do
   use ExUnit.Case
   import MixHelper
-  alias Mix.Tasks.Phx.Gen
-  alias Mix.Phoenix.{Context, Schema}
+  alias Mix.Tasks.Ash.Gen
+  alias Mix.Ash.{Context, Schema}
 
   setup do
     Mix.Task.clear()
@@ -20,23 +20,23 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       context = Context.new("Blog", schema, [])
 
       assert %Context{
-               alias: Blog,
-               base_module: Ash,
-               basename: "blog",
-               module: Ash.Blog,
-               web_module: AshWeb,
-               schema: %Mix.Phoenix.Schema{
-                 alias: Post,
-                 human_plural: "Posts",
-                 human_singular: "Post",
-                 module: Ash.Blog.Post,
-                 plural: "posts",
-                 singular: "post"
-               }
-             } = context
+        alias: Blog,
+        base_module: Ash,
+        basename: "blog",
+        module: Ash.Blog,
+        web_module: AshWeb,
+        schema: %Mix.Ash.Schema{
+          alias: Post,
+          human_plural: "Posts",
+          human_singular: "Post",
+          module: Ash.Blog.Post,
+          plural: "posts",
+          singular: "post"
+        }
+      } = context
 
       assert String.ends_with?(context.dir, "lib/ash/blog")
-      assert String.ends_with?(context.file, "lib/ash/blog.ex")
+      assert String.ends_with?(context.file, "lib/ash/blog/_blog.ex")
       assert String.ends_with?(context.test_file, "test/ash/blog_test.exs")
       assert String.ends_with?(context.schema.file, "lib/ash/blog/post.ex")
     end)
@@ -48,23 +48,24 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       context = Context.new("Site.Blog", schema, [])
 
       assert %Context{
-               alias: Blog,
-               base_module: Ash,
-               basename: "blog",
-               module: Ash.Site.Blog,
-               web_module: AshWeb,
-               schema: %Mix.Phoenix.Schema{
-                 alias: Post,
-                 human_plural: "Posts",
-                 human_singular: "Post",
-                 module: Ash.Site.Blog.Post,
-                 plural: "posts",
-                 singular: "post"
-               }
-             } = context
+        alias: Blog,
+        base_module: Ash,
+        basename: "blog",
+        module: Ash.Site.Blog,
+        web_module: AshWeb,
+        schema: %Mix.Ash.Schema{
+          alias: Post,
+          human_plural: "Posts",
+          human_singular: "Post",
+          module: Ash.Site.Blog.Post,
+          plural: "posts",
+          singular: "post"
+        }
+      } = context
 
       assert String.ends_with?(context.dir, "lib/ash/site/blog")
-      assert String.ends_with?(context.file, "lib/ash/site/blog.ex")
+      assert String.ends_with?(context.file, "lib/ash/site/blog/_blog.ex")
+      assert String.ends_with?(context.loader_file, "lib/ash/site/blog/_loader.ex")
       assert String.ends_with?(context.test_file, "test/ash/site/blog_test.exs")
       assert String.ends_with?(context.schema.file, "lib/ash/site/blog/post.ex")
     end)
@@ -74,7 +75,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
     in_tmp_project(config.test, fn ->
       File.mkdir_p!("lib/ash/blog")
 
-      File.write!("lib/ash/blog.ex", """
+      File.write!("lib/ash/blog/_blog.ex", """
       defmodule Ash.Blog do
       end
       """)
@@ -110,16 +111,16 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       end
 
       assert_raise Mix.Error,
-                   ~r/Cannot generate context Ash because it has the same name as the application/,
-                   fn ->
-                     Gen.Context.run(~w(Ash Post blogs))
-                   end
+        ~r/Cannot generate context Ash because it has the same name as the application/,
+        fn ->
+          Gen.Context.run(~w(Ash Post blogs))
+        end
 
       assert_raise Mix.Error,
-                   ~r/Cannot generate schema Ash because it has the same name as the application/,
-                   fn ->
-                     Gen.Context.run(~w(Blog Ash blogs))
-                   end
+        ~r/Cannot generate schema Ash because it has the same name as the application/,
+        fn ->
+          Gen.Context.run(~w(Blog Ash blogs))
+        end
 
       assert_raise Mix.Error, ~r/Invalid arguments/, fn ->
         Gen.Context.run(~w(Blog.Post posts))
@@ -139,13 +140,39 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
         assert file =~ "field :title, :string"
       end)
 
-      assert_file("lib/ash/blog.ex", fn file ->
-        assert file =~ "def get_post!"
-        assert file =~ "def list_posts"
-        assert file =~ "def create_post"
-        assert file =~ "def update_post"
-        assert file =~ "def delete_post"
-        assert file =~ "def change_post"
+      assert_file("lib/ash/blog/_blog.ex", fn file ->
+        assert file =~ ~S"""
+          def list_posts do
+            Repo.all(Post)
+          end
+        """
+        assert file =~ ~S"""
+          def get_post!(id), do: Repo.get!(Post, id)
+        """
+        assert file =~ ~S"""
+          def create_post(attrs \\ %{}) do
+            %Post{}
+            |> Post.changeset(attrs)
+            |> Repo.insert()
+          end
+        """
+        assert file =~ ~S"""
+          def update_post(%Post{} = post, attrs) do
+            post
+            |> Post.changeset(attrs)
+            |> Repo.update()
+          end
+        """
+        assert file =~ ~S"""
+          def delete_post(%Post{} = post) do
+            Repo.delete(post)
+          end
+        """
+        assert file =~ ~S"""
+          def change_post(%Post{} = post) do
+            Post.changeset(post, %{})
+          end
+        """
       end)
 
       assert_file("test/ash/blog_test.exs", fn file ->
@@ -166,9 +193,9 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       Gen.Context.run(~w(Blog Comment comments title:string))
 
       assert_received {:mix_shell, :info,
-                       ["You are generating into an existing context" <> notice]}
+        ["You are generating into an existing context" <> notice]}
 
-      assert notice =~ "Ash.Blog context currently has 6 functions and 1 files in its directory"
+      assert notice =~ "Ash.Blog context currently has 6 functions and 3 files in its directory"
       assert_received {:mix_shell, :yes?, ["Would you like to proceed?"]}
 
       assert_file("lib/ash/blog/comment.ex", fn file ->
@@ -188,7 +215,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
         assert file =~ "add :title, :string"
       end)
 
-      assert_file("lib/ash/blog.ex", fn file ->
+      assert_file("lib/ash/blog/_blog.ex", fn file ->
         assert file =~ "def get_comment!"
         assert file =~ "def list_comments"
         assert file =~ "def create_comment"
@@ -205,7 +232,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
 
       refute_file("lib/ash/blog/post.ex")
 
-      assert_file("lib/ash/blog.ex", fn file ->
+      assert_file("lib/ash/blog/_blog.ex", fn file ->
         assert file =~ "def get_post!"
         assert file =~ "def list_posts"
         assert file =~ "def create_post"
