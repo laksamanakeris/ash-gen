@@ -37,6 +37,8 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
 
       assert String.ends_with?(context.dir, "lib/ash/blog")
       assert String.ends_with?(context.file, "lib/ash/blog/_blog.ex")
+      assert String.ends_with?(context.loader_file, "lib/ash/blog/_loader.ex")
+      assert String.ends_with?(context.policy_file, "lib/ash/blog/_policy.ex")
       assert String.ends_with?(context.test_file, "test/ash/blog_test.exs")
       assert String.ends_with?(context.schema.file, "lib/ash/blog/post.ex")
     end)
@@ -66,6 +68,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       assert String.ends_with?(context.dir, "lib/ash/site/blog")
       assert String.ends_with?(context.file, "lib/ash/site/blog/_blog.ex")
       assert String.ends_with?(context.loader_file, "lib/ash/site/blog/_loader.ex")
+      assert String.ends_with?(context.policy_file, "lib/ash/site/blog/_policy.ex")
       assert String.ends_with?(context.test_file, "test/ash/site/blog_test.exs")
       assert String.ends_with?(context.schema.file, "lib/ash/site/blog/post.ex")
     end)
@@ -176,6 +179,11 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
         """
       end)
 
+      assert_file("lib/ash/blog/_policy.ex", fn file ->
+        assert file =~ "defmodule Ash.Blog.Policy do"
+        assert file =~ "Authorize a user's ability to call Blog actions."
+      end)
+
       assert_file("test/ash/blog_test.exs", fn file ->
         assert file =~ "use Ash.DataCase"
         assert file =~ "describe \"posts\" do"
@@ -195,7 +203,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       assert_received {:mix_shell, :info,
         ["You are generating into an existing context" <> notice]}
 
-      assert notice =~ "Ash.Blog context currently has 6 functions and 3 files in its directory"
+      assert notice =~ "Ash.Blog context currently has 6 functions and 4 files in its directory"
       assert_received {:mix_shell, :yes?, ["Would you like to proceed?"]}
 
       assert_file("lib/ash/blog/comment.ex", fn file ->

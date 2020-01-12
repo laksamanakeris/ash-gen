@@ -12,6 +12,7 @@ defmodule Mix.Ash.Context do
             basename: nil,
             file: nil,
             loader_file: nil,
+            policy_file: nil,
             test_file: nil,
             dir: nil,
             generate?: true,
@@ -32,6 +33,7 @@ defmodule Mix.Ash.Context do
     dir       = Mix.Ash.context_lib_path(ctx_app, basedir)
     file      = dir <> "/_#{basename}.ex"
     loader_file = dir <> "/_loader.ex"
+    policy_file = dir <> "/_policy.ex"
     test_dir  = Mix.Ash.context_test_path(ctx_app, basedir)
     test_file = test_dir <> "_test.exs"
     generate? = Keyword.get(opts, :context, true)
@@ -46,6 +48,7 @@ defmodule Mix.Ash.Context do
       basename: basename,
       file: file,
       loader_file: loader_file,
+      policy_file: policy_file,
       test_file: test_file,
       dir: dir,
       generate?: generate?,
@@ -58,6 +61,8 @@ defmodule Mix.Ash.Context do
   def pre_existing_tests?(%Context{test_file: file}), do: File.exists?(file)
 
   def pre_existing_loader?(%Context{loader_file: file}), do: File.exists?(file)
+
+  def pre_existing_policy?(%Context{policy_file: file}), do: File.exists?(file)
 
   def function_count(%Context{file: file}) do
     {_ast, count} =
