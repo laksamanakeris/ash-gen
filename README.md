@@ -1,9 +1,15 @@
 # Ash
 
+Set of opinionated generators for Phoenix & Absinthe. Creates contexts with
+dataloader and a authorization policy as well as resolver, types and tests
+for graphql resources.
+
+
 ## Mix Ash Context & Schema
 
-Borrowe from the Phoenix generators where they pass objects that contain 
-ecessary info to generate files. These are examples of the objects.
+Borrowed from the Phoenix generators where they pass objects that contain 
+necessary info to generate files. These are examples of the objects. Will
+move this out after I stop referencing it so much ha
 
 ```
 %Mix.Ash.Context{
