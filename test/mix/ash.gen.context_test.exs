@@ -1,8 +1,5 @@
 Code.require_file("../mix_helper.exs", __DIR__)
 
-defmodule Phoenix.DupContext do
-end
-
 defmodule Mix.Tasks.Ash.Gen.ContextTest do
   use ExUnit.Case
   import MixHelper

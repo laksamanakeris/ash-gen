@@ -1,12 +1,12 @@
 # Ash
 
-## Mix Phoenix Context & Schema
+## Mix Ash Context & Schema
 
-Phoenix passes two objects that contain necessary info to generate files.
-These are examples of the objects.
+Borrowe from the Phoenix generators where they pass objects that contain 
+ecessary info to generate files. These are examples of the objects.
 
 ```
-%Mix.Phoenix.Context{
+%Mix.Ash.Context{
   alias: Blog,
   base_module: Ash,
   basename: "blog",
@@ -17,7 +17,7 @@ These are examples of the objects.
   module: Ash.Blog,
   name: "Blog",
   opts: [],
-  schema: %Mix.Phoenix.Schema{
+  schema: %Mix.Ash.Schema{
     alias: Post,
     assocs: [],
     attrs: [],
@@ -52,7 +52,7 @@ These are examples of the objects.
   web_module: AshWeb
 }
 
-%Mix.Phoenix.Schema{
+%Mix.Ash.Schema{
   alias: Post,
   assocs: [],
   attrs: [],
