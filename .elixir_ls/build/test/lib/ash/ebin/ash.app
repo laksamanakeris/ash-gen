@@ -6,6 +6,6 @@
                         'Elixir.Mix.Tasks.Ash.Gen.Context',
                         'Elixir.Mix.Tasks.Ash.Gen.Gql',
                         'Elixir.Mix.Tasks.Ash.Gen.Policy',
-                        'Elixir.Mix.Tasks.Ash.Install']},
+                        'Elixir.Mix.Tasks.Ash.New']},
               {registered,[]},
               {vsn,"0.1.0"}]}.

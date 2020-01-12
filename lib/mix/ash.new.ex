@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Ash.Install do
+defmodule Mix.Tasks.Ash.New do
   use Mix.Task
 
   @shortdoc "Scaffold base Ash files"
