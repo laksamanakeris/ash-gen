@@ -24,15 +24,58 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
     end)
   end
 
-  test "generates context and handles existing contexts", config do
+  test "generates a graphql resource", config do
     in_tmp_project(config.test, fn ->
-      Gen.Gql.run(~w(Blog Post posts title:string word_count:integer is_draft:boolean author:references:user))
+      Gen.Gql.run(~w(Blog Post posts title:string word_count:integer is_draft:boolean author:references:post))
 
       # assert_file("lib/ash/blog/post.ex", fn file ->
       #   assert file =~ "field :title, :string"
       # end)
 
-      assert_file("lib/ash_web/schema/post/post_resolver.ex")
+      assert_file("lib/ash_web/schema/post/post_resolver.ex", fn file ->
+        assert file =~ """
+        defmodule AshWeb.Schema.PostResolver do
+          alias Ash.Blog
+          alias AppWeb.ErrorHelper
+
+          def all(_args, _info) do
+            {:ok, Blog.list_posts()}
+          end
+
+          def find(%{id: id}, _info) do
+            try do
+              post = Blog.get_post!(id)
+              {:ok, post}
+            rescue
+              e -> {:error, Exception.message(e)}
+            end
+          end
+
+          def create(args, _info) do
+            case Blog.create_post(args) do
+              {:ok, post} -> {:ok, post}
+              {:error, changeset} -> ErrorHelper.format_errors(changeset)
+            end
+          end
+
+          def update(%{id: id, post: post_params}, _info) do
+            Blog.get_post!(id)
+            |> Blog.update_post(post_params)
+          end
+
+          def delete(%{id: id}, _info) do
+            try do
+              Blog.get_post!(id)
+              |> Blog.delete_post()
+            rescue
+              e -> {:error, Exception.message(e)}
+            end
+          end
+        end
+        """
+      end)
+
+
       assert_file("test/ash_web/schema/post/post_resolver_test.exs")
 
       assert_file("lib/ash_web/schema/post/post_types.ex", fn file ->
@@ -62,17 +105,20 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
           end
 
           object :post_queries do
+            @desc "A single post"
             field :post, non_null(:post) do
               arg :id, non_null(:id)
               resolve &PostResolver.find/2
             end
 
+            @desc "A list of posts"
             field :posts, list_of(:post) do
               resolve &PostResolver.all/2
             end
           end
 
           object :post_mutations do
+            @desc "Create a post"
             field :create_post, :post do
               arg :title, :string
               arg :word_count, :integer
@@ -82,6 +128,7 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
               resolve &PostResolver.create/2
             end
 
+            @desc "Update a post"
             field :update_post, :post do
               arg :id, non_null(:id)
               arg :post, :update_post_params
@@ -89,12 +136,29 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
               resolve &PostResolver.update/2
             end
 
+            @desc "Delete a post"
             field :delete_post, :post do
               arg :id, non_null(:id)
 
               resolve &PostResolver.delete/2
             end
           end
+        """
+      end)
+    end)
+  end
+
+  test "handles conditional dataloader injection and prompts", config do
+    in_tmp_project(config.test, fn ->
+      Gen.Gql.run(~w(Blog Post posts title))
+
+      assert_file("lib/ash_web/schema/post/post_types.ex", fn file ->
+        assert file =~ """
+        defmodule AshWeb.Schema.PostTypes do
+          use Absinthe.Schema.Notation
+          use Absinthe.Ecto, repo: App.Repo
+
+          alias AshWeb.Schema.PostResolver
         """
       end)
     end)

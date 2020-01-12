@@ -1,8 +1,8 @@
 defmodule <%= inspect gql.schema_alias %>Types do
   use Absinthe.Schema.Notation
-  use Absinthe.Ecto, repo: App.Repo
+  use Absinthe.Ecto, repo: App.Repo<%= if Enum.count(schema.assocs) > 0 do %>
 
-  <%= if Enum.count(schema.assocs) > 0 do %>import Absinthe.Resolution.Helpers, only: [dataloader: 1]<% end %>
+  import Absinthe.Resolution.Helpers, only: [dataloader: 1]<% end %>
 
   alias <%= inspect gql.schema_alias %>Resolver
 
@@ -19,17 +19,20 @@ defmodule <%= inspect gql.schema_alias %>Types do
   end
 
   object :<%= schema.singular %>_queries do
+    @desc "A single <%= schema.singular %>"
     field :<%= schema.singular %>, non_null(:<%= schema.singular %>) do
       arg :id, non_null(:id)
       resolve &<%= inspect schema.alias %>Resolver.find/2
     end
 
+    @desc "A list of <%= schema.plural %>"
     field :<%= schema.plural %>, list_of(:<%= schema.singular %>) do
       resolve &<%= inspect schema.alias %>Resolver.all/2
     end
   end
 
   object :<%= schema.singular %>_mutations do
+    @desc "Create a <%= schema.singular %>"
     field :create_<%= schema.singular %>, :<%= schema.singular %> do<%= for {k, v} <- schema.attrs do %>
       arg <%= inspect k %>, <%= inspect v %><% end %><%= for {_n, i, _m, _s} <- schema.assocs do %>
       arg <%= inspect i %>, :id<% end %>
@@ -37,6 +40,7 @@ defmodule <%= inspect gql.schema_alias %>Types do
       resolve &<%= inspect schema.alias %>Resolver.create/2
     end
 
+    @desc "Update a <%= schema.singular %>"
     field :update_<%= schema.singular %>, :<%= schema.singular %> do
       arg :id, non_null(:id)
       arg :<%= schema.singular %>, :update_<%= schema.singular %>_params
@@ -44,6 +48,7 @@ defmodule <%= inspect gql.schema_alias %>Types do
       resolve &<%= inspect schema.alias %>Resolver.update/2
     end
 
+    @desc "Delete a <%= schema.singular %>"
     field :delete_<%= schema.singular %>, :<%= schema.singular %> do
       arg :id, non_null(:id)
 
