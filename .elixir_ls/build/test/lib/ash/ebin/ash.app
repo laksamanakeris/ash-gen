@@ -1,0 +1,11 @@
+{application,ash,
+             [{applications,[kernel,stdlib,elixir,logger]},
+              {description,"ash"},
+              {modules,['Elixir.Ash','Elixir.Ash.Helpers',
+                        'Elixir.Ash.Helpers.UsePolicy',
+                        'Elixir.Mix.Tasks.Ash.Gen.Context',
+                        'Elixir.Mix.Tasks.Ash.Gen.Gql',
+                        'Elixir.Mix.Tasks.Ash.Gen.Policy',
+                        'Elixir.Mix.Tasks.Ash.Install']},
+              {registered,[]},
+              {vsn,"0.1.0"}]}.
