@@ -141,37 +141,38 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       end)
 
       assert_file("lib/ash/blog/_blog.ex", fn file ->
-        assert file =~ ~S"""
+        assert file =~ """
           def list_posts do
             Repo.all(Post)
-          end
         """
-        assert file =~ ~S"""
+        assert file =~ """
           def get_post!(id), do: Repo.get!(Post, id)
         """
         assert file =~ ~S"""
           def create_post(attrs \\ %{}) do
             %Post{}
             |> Post.changeset(attrs)
-            |> Repo.insert()
-          end
         """
-        assert file =~ ~S"""
+        assert file =~ """
           def update_post(%Post{} = post, attrs) do
             post
             |> Post.changeset(attrs)
-            |> Repo.update()
-          end
         """
-        assert file =~ ~S"""
+        assert file =~ """
           def delete_post(%Post{} = post) do
             Repo.delete(post)
-          end
         """
-        assert file =~ ~S"""
+        assert file =~ """
           def change_post(%Post{} = post) do
             Post.changeset(post, %{})
-          end
+        """
+      end)
+
+      assert_file("lib/ash/blog/_loader.ex", fn file ->
+        assert file =~ """
+        defmodule Ash.Blog.Loader do
+          def data do
+            Dataloader.Ecto.new(Ash.Repo, query: &query/2)
         """
       end)
 
@@ -182,7 +183,6 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       end)
 
       assert [path] = Path.wildcard("priv/repo/migrations/*_create_posts.exs")
-
       assert_file(path, fn file ->
         assert file =~ "create table(:posts)"
         assert file =~ "add :title, :string"
@@ -209,7 +209,6 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       end)
 
       assert [path] = Path.wildcard("priv/repo/migrations/*_create_comments.exs")
-
       assert_file(path, fn file ->
         assert file =~ "create table(:comments)"
         assert file =~ "add :title, :string"
