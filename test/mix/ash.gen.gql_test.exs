@@ -26,7 +26,7 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
 
   test "generates context and handles existing contexts", config do
     in_tmp_project(config.test, fn ->
-      Gen.Gql.run(~w(Blog Post posts title:string word_count:integer is_draft:boolean))
+      Gen.Gql.run(~w(Blog Post posts title:string word_count:integer is_draft:boolean author:references:user))
 
       # assert_file("lib/ash/blog/post.ex", fn file ->
       #   assert file =~ "field :title, :string"
@@ -41,6 +41,8 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
           use Absinthe.Schema.Notation
           use Absinthe.Ecto, repo: App.Repo
 
+          import Absinthe.Resolution.Helpers, only: [dataloader: 1]
+
           alias AshWeb.Schema.PostResolver
 
           @desc "A post"
@@ -49,12 +51,14 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
             field :title, :string
             field :word_count, :integer
             field :is_draft, :boolean
+            field :author, :author, resolve: dataloader(Blog)
           end
 
           input_object :update_post_params do
             field :title, :string
             field :word_count, :integer
             field :is_draft, :boolean
+            field :author, :id
           end
 
           object :post_queries do
@@ -73,6 +77,7 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
               arg :title, :string
               arg :word_count, :integer
               arg :is_draft, :boolean
+              arg :author, :id
 
               resolve &PostResolver.create/2
             end

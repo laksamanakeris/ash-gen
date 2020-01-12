@@ -2,13 +2,15 @@ defmodule <%= inspect gql.schema_alias %>Types do
   use Absinthe.Schema.Notation
   use Absinthe.Ecto, repo: App.Repo
 
+  <%= if Enum.count(schema.assocs) > 0 do %>import Absinthe.Resolution.Helpers, only: [dataloader: 1]<% end %>
+
   alias <%= inspect gql.schema_alias %>Resolver
 
   @desc "A <%= schema.singular %>"
   object :<%= schema.singular %> do
     field :id, :id<%= for {k, v} <- schema.attrs do %>
     field <%= inspect k %>, <%= inspect v %><% end %><%= for {n, _i, _m, _s} <- schema.assocs do %>
-    field <%= inspect n %>, <%= inspect n %>, resolve: assoc(<%= inspect n %>)<% end %>
+    field <%= inspect n %>, <%= inspect n %>, resolve: dataloader(<%= inspect context.alias %>)<% end %>
   end
 
   input_object :update_<%= schema.singular %>_params do<%= for {k, v} <- schema.attrs do %>
