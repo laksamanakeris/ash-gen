@@ -29,7 +29,7 @@ defmodule Mix.Tasks.Ash.Gen.Context do
 
     {context, schema} = build(args)
     binding = [context: context, schema: schema]
-    paths = Mix.Ash.generator_paths() ++ [:ash]
+    paths = Mix.Ash.generator_paths()
 
     prompt_for_conflicts(context)
     prompt_for_code_injection(context)
@@ -50,7 +50,8 @@ defmodule Mix.Tasks.Ash.Gen.Context do
     {opts, parsed, _} = parse_opts(args)
     [context_name, schema_name, plural | schema_args] = validate_args!(parsed)
     schema_module = inspect(Module.concat(context_name, schema_name))
-    schema = Gen.Schema.build([schema_module, plural | schema_args], opts, __MODULE__)
+    schema = Mix.Tasks.Phx.Gen.Schema.build([schema_module, plural | schema_args], opts, __MODULE__)
+    schema = struct(Schema, Map.from_struct(schema))
     context = Context.new(context_name, schema, opts)
     {context, schema}
   end
@@ -83,7 +84,11 @@ defmodule Mix.Tasks.Ash.Gen.Context do
 
   @doc false
   def copy_new_files(%Context{schema: schema} = context, paths, binding) do
-    if schema.generate?, do: Gen.Schema.copy_new_files(schema, paths, binding)
+    if schema.generate? do
+      schema = struct(Mix.Phoenix.Schema, Map.from_struct(schema))
+      Mix.Tasks.Phx.Gen.Schema.copy_new_files(schema, paths, binding)
+    end
+
     inject_schema_access(context, paths, binding)
     inject_tests(context, paths, binding)
     inject_loader(context, paths, binding)
@@ -105,11 +110,7 @@ defmodule Mix.Tasks.Ash.Gen.Context do
       "priv/templates/ash.gen.context/#{schema_access_template(context)}",
       binding
     )
-    |> inject_eex_before_final_end(file, binding)
-  end
-
-  defp write_file(content, file) do
-    File.write!(file, content)
+    |> Mix.Ash.inject_eex_before_final_end(file, binding)
   end
 
   defp inject_tests(%Context{test_file: test_file} = context, paths, binding) do
@@ -122,7 +123,7 @@ defmodule Mix.Tasks.Ash.Gen.Context do
 
     paths
     |> Mix.Ash.eval_from("priv/templates/ash.gen.context/test_cases.exs", binding)
-    |> inject_eex_before_final_end(test_file, binding)
+    |> Mix.Ash.inject_eex_before_final_end(test_file, binding)
   end
 
   defp inject_loader(%Context{loader_file: loader_file} = context, paths, binding) do
@@ -143,28 +144,11 @@ defmodule Mix.Tasks.Ash.Gen.Context do
     end
   end
 
-  defp inject_eex_before_final_end(content_to_inject, file_path, binding) do
-    file = File.read!(file_path)
-
-    if String.contains?(file, content_to_inject) do
-      :ok
-    else
-      Mix.shell().info([:green, "* injecting ", :reset, Path.relative_to_cwd(file_path)])
-
-      file
-      |> String.trim_trailing()
-      |> String.trim_trailing("end")
-      |> EEx.eval_string(binding)
-      |> Kernel.<>(content_to_inject)
-      |> Kernel.<>("end\n")
-      |> write_file(file_path)
-    end
-  end
-
   @doc false
   def print_shell_instructions(%Context{schema: schema}) do
     if schema.generate? do
-      Gen.Schema.print_shell_instructions(schema)
+      schema = struct(Mix.Phoenix.Schema, Map.from_struct(schema))
+      Mix.Tasks.Phx.Gen.Schema.print_shell_instructions(schema)
     else
       :ok
     end

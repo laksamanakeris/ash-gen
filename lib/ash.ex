@@ -177,7 +177,7 @@ defmodule Mix.Ash do
   and falls back to Phoenix's `priv` directory.
   """
   def generator_paths do
-    [".", :phoenix]
+    [".", :phoenix, :ash]
   end
 
   @doc """
@@ -346,5 +346,29 @@ defmodule Mix.Ash do
     else
       Module.concat(["#{base}Web"])
     end
+  end
+
+  def pre_existing?(file), do: File.exists?(file)
+
+  def inject_eex_before_final_end(content_to_inject, file_path, binding) do
+    file = File.read!(file_path)
+
+    if String.contains?(file, content_to_inject) do
+      :ok
+    else
+      Mix.shell().info([:green, "* injecting ", :reset, Path.relative_to_cwd(file_path)])
+
+      file
+      |> String.trim_trailing()
+      |> String.trim_trailing("end")
+      |> EEx.eval_string(binding)
+      |> Kernel.<>(content_to_inject)
+      |> Kernel.<>("end\n")
+      |> write_file(file_path)
+    end
+  end
+
+  def write_file(content, file) do
+    File.write!(file, content)
   end
 end

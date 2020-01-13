@@ -352,4 +352,6 @@ defmodule Mix.Ash.Schema do
       other -> Mix.raise "Expected :migration_module to be a module, got: #{inspect(other)}"
     end
   end
+
+  def pre_existing?(file), do: File.exists?(file)
 end

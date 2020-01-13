@@ -7,7 +7,7 @@ defmodule Mix.Tasks.Ash.Gen.Gql do
 
   use Mix.Task
 
-  alias Mix.Ash.{Gql, Context, Schema}
+  alias Mix.Ash.Gql
   alias Mix.Tasks.Ash.Gen
 
   @doc false
@@ -18,7 +18,7 @@ defmodule Mix.Tasks.Ash.Gen.Gql do
 
     {gql, context, schema} = build(args)
     binding = [gql: gql, context: context, schema: schema]
-    paths = Mix.Ash.generator_paths() ++ [:ash]
+    paths = Mix.Ash.generator_paths()
 
     Gen.Context.run(args)
 
