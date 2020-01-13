@@ -75,7 +75,6 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
         """
       end)
 
-
       assert_file("test/ash_web/schema/post/post_resolver_test.exs")
 
       assert_file("lib/ash_web/schema/post/post_types.ex", fn file ->
