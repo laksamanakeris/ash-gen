@@ -153,7 +153,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
             |> Repo.all
         """
         assert file =~ ~S"""
-          def filter_users_with(query, filter) do
+          def filter_posts_with(query, filter) do
             Enum.reduce(filter, query, fn
               {:slug, slug}, query ->
                 from q in query, where: ilike(q.slug, ^"%#{slug}%")

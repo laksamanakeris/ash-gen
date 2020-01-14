@@ -21,7 +21,7 @@
     |> Repo.all
   end
 
-  def filter_users_with(query, filter) do
+  def filter_<%= schema.plural %>_with(query, filter) do
     Enum.reduce(filter, query, fn<%= for {k, _v} <- schema.attrs do %>
       {:<%= k %>, <%= k %>}, query ->
         from q in query, where: ilike(q.<%= k %>, ^"%#{<%= k %>}%")<% end %>
