@@ -15,8 +15,6 @@ defmodule Mix.Tasks.Ash.Gen.Schema do
       Mix.raise("mix ash.gen.schema can only be run inside an application directory")
     end
 
-    Mix.Tasks.Phx.Gen.Schema.run(args)
-
     schema = Mix.Tasks.Phx.Gen.Schema.build(args, [])
     paths = Mix.Ash.generator_paths()
 
@@ -47,6 +45,9 @@ defmodule Mix.Tasks.Ash.Gen.Schema do
     files = files_to_be_generated(ctx.schema)
     Mix.Ash.copy_from(paths, "priv/templates/ash.gen.schema", binding, files)
     inject_factory_access(ctx, paths, binding)
+
+    struct(Mix.Phoenix.Schema, Map.from_struct(ctx.schema))
+    |> Mix.Tasks.Phx.Gen.Schema.copy_new_files(paths, binding)
 
     ctx
   end
