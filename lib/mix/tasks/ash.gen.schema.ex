@@ -20,15 +20,19 @@ defmodule Mix.Tasks.Ash.Gen.Schema do
     schema = Mix.Tasks.Phx.Gen.Schema.build(args, [])
     paths = Mix.Ash.generator_paths()
 
-    ctx = %{
-      base: Module.concat([Mix.Ash.context_base(schema.context_app)]),
-      schema: struct(Schema, Map.from_struct(schema)),
-      factory_file: "test/support/factory.ex"
-    }
+    ctx = create_alt_context(schema)
     binding = [schema: schema, ctx: ctx]
 
     ctx
     |> copy_new_files(paths, binding)
+  end
+
+  def create_alt_context(schema) do
+    %{
+      base: Module.concat([Mix.Ash.context_base(schema.context_app)]),
+      schema: struct(Schema, Map.from_struct(schema)),
+      factory_file: "test/support/factory.ex"
+    }
   end
 
   @doc false

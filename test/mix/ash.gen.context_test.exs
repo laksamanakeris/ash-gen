@@ -227,6 +227,11 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
         assert file =~ "def delete_comment"
         assert file =~ "def change_comment"
       end)
+
+      # Double check our custom schema files are also being copied since
+      # we arent actually using Schema.run to generate the schema files.
+      assert_file("test/support/factories/post_factory.ex")
+      assert_file("test/support/factory.ex")
     end)
   end
 
