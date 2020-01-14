@@ -142,8 +142,23 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
 
       assert_file("lib/ash/blog/_blog.ex", fn file ->
         assert file =~ """
-          def list_posts do
-            Repo.all(Post)
+          def list_posts(args) do
+            args
+            |> Enum.reduce(Post, fn
+              {:filter, filter}, query ->
+                filter_posts_with(query, filter)
+              {:order_by, order}, query ->
+                Helpers.order_list_by(query, order)
+            end)
+            |> Repo.all
+        """
+        assert file =~ ~S"""
+          def filter_users_with(query, filter) do
+            Enum.reduce(filter, query, fn
+              {:slug, slug}, query ->
+                from q in query, where: ilike(q.slug, ^"%#{slug}%")
+              {:title, title}, query ->
+                from q in query, where: ilike(q.title, ^"%#{title}%")
         """
         assert file =~ """
           def get_post!(id), do: Repo.get!(Post, id)
@@ -172,7 +187,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
         assert file =~ """
         defmodule Ash.Blog.Loader do
           def data do
-            Dataloader.Ecto.new(Ash.Repo, query: &query/2)
+            Dataloader.Ecto.new(Ash.Repo, query: &build_query/2)
         """
       end)
 
@@ -200,7 +215,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       assert_received {:mix_shell, :info,
         ["You are generating into an existing context" <> notice]}
 
-      assert notice =~ "Ash.Blog context currently has 6 functions and 4 files in its directory"
+      assert notice =~ "Ash.Blog context currently has 7 functions and 4 files in its directory"
       assert_received {:mix_shell, :yes?, ["Would you like to proceed?"]}
 
       assert_file("lib/ash/blog/comment.ex", fn file ->

@@ -26,7 +26,7 @@ move this out after I stop referencing it so much ha
   schema: %Mix.Ash.Schema{
     alias: Post,
     assocs: [],
-    attrs: [],
+    attrs: [title: :string, word_count: :integer, is_draft: :boolean],
     binary_id: nil,
     context_app: :ash,
     defaults: %{},

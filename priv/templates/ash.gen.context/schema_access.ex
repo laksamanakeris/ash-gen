@@ -10,8 +10,22 @@
       [%<%= inspect schema.alias %>{}, ...]
 
   """
-  def list_<%= schema.plural %> do
-    Repo.all(<%= inspect schema.alias %>)
+  def list_<%= schema.plural %>(args) do
+    args
+    |> Enum.reduce(<%= inspect schema.alias %>, fn
+      {:filter, filter}, query ->
+        filter_<%= schema.plural %>_with(query, filter)
+      {:order_by, order}, query ->
+        Helpers.order_list_by(query, order)
+    end)
+    |> Repo.all
+  end
+
+  def filter_users_with(query, filter) do
+    Enum.reduce(filter, query, fn<%= for {k, _v} <- schema.attrs do %>
+      {:<%= k %>, <%= k %>}, query ->
+        from q in query, where: ilike(q.<%= k %>, ^"%#{<%= k %>}%")<% end %>
+    end)
   end
 
   @doc """

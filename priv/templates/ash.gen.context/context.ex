@@ -4,6 +4,7 @@ defmodule <%= inspect context.module %> do
   """
 
   import Ecto.Query, warn: false
-  use Ash.Helpers.UsePolicy
+  use <%= inspect context.base_module %>.Helpers.UsePolicy
   alias <%= inspect schema.repo %>
+  alias <%= inspect context.base_module %>
 end
