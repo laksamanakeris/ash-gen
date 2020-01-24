@@ -47,7 +47,7 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
               post = Blog.get_post!(id)
               {:ok, post}
             rescue
-              e -> {:error, Exception.message(e)}
+              error -> {:error, Exception.message(error)}
             end
           end
 
@@ -68,7 +68,7 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
               Blog.get_post!(id)
               |> Blog.delete_post()
             rescue
-              e -> {:error, Exception.message(e)}
+              error -> {:error, Exception.message(error)}
             end
           end
         end

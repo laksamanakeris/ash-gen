@@ -11,7 +11,7 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
       <%= schema.singular %> = <%= inspect context.alias %>.get_<%= schema.singular %>!(id)
       {:ok, <%= schema.singular %>}
     rescue
-      e -> {:error, Exception.message(e)}
+      error -> {:error, Exception.message(error)}
     end
   end
 
@@ -32,7 +32,7 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
       <%= inspect context.alias %>.get_<%= schema.singular %>!(id)
       |> <%= inspect context.alias %>.delete_<%= schema.singular %>()
     rescue
-      e -> {:error, Exception.message(e)}
+      error -> {:error, Exception.message(error)}
     end
   end
 end
