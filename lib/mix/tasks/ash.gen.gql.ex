@@ -53,7 +53,7 @@ defmodule Mix.Tasks.Ash.Gen.Gql do
   def print_shell_instructions(%Gql{schema: schema, context: context} = gql) do
     Mix.shell.info """
 
-      Import the #{schema.singular} types and fields into ./#{Mix.Phoenix.web_path(context.context_app)}/schema.ex :
+      Import the #{schema.singular} types and fields into ./#{Mix.Phoenix.web_path(context.context_app)}/schema.ex:
 
         import_types(#{inspect gql.schema_alias}Types)
 
