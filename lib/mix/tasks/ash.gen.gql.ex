@@ -24,8 +24,7 @@ defmodule Mix.Tasks.Ash.Gen.Gql do
 
     gql
     |> copy_new_files(paths, binding)
-
-    # |> print_shell_instructions()
+    |> print_shell_instructions()
   end
 
   @doc false
@@ -49,5 +48,22 @@ defmodule Mix.Tasks.Ash.Gen.Gql do
     Mix.Ash.copy_from(paths, "priv/templates/ash.gen.gql", binding, files)
 
     gql
+  end
+
+  def print_shell_instructions(%Gql{schema: schema}) do
+    Mix.shell.info """
+
+      Import the #{schema.singular} types and fields into #{schema.web_path}/schema.ex:
+
+        import_types(<%= inspect gql.schema_alias %>Types)
+
+        query do
+          import_fields(:#{schema.singular}_queries)
+        end
+
+        mutation do
+          import_fields(:#{schema.singular}_mutations)
+        end
+      """
   end
 end
