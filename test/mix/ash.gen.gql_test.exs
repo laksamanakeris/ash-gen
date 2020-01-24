@@ -59,8 +59,12 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
           end
 
           def update(%{id: id, post: post_params}, _info) do
-            Blog.get_post!(id)
-            |> Blog.update_post(post_params)
+            try do
+              Blog.get_post!(id)
+              |> Blog.update_post(post_params)
+            rescue
+              error -> {:error, Exception.message(error)}
+            end
           end
 
           def delete(%{id: id}, _info) do
