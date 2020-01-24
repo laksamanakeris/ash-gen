@@ -50,12 +50,12 @@ defmodule Mix.Tasks.Ash.Gen.Gql do
     gql
   end
 
-  def print_shell_instructions(%Gql{schema: schema}) do
+  def print_shell_instructions(%Gql{schema: schema, context: context} = gql) do
     Mix.shell.info """
 
-      Import the #{schema.singular} types and fields into #{schema.web_path}/schema.ex:
+      Import the #{schema.singular} types and fields into #{Mix.Phoenix.web_path(context.context_app)}/schema.ex :
 
-        import_types(<%= inspect gql.schema_alias %>Types)
+        import_types(#{inspect gql.schema_alias}Types)
 
         query do
           import_fields(:#{schema.singular}_queries)
@@ -64,6 +64,8 @@ defmodule Mix.Tasks.Ash.Gen.Gql do
         mutation do
           import_fields(:#{schema.singular}_mutations)
         end
-      """
+
+      Keep in mind that you will need to update authorization policies, resolvers and relationships as you progress with your app.
+    """
   end
 end
