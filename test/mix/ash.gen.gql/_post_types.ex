@@ -15,6 +15,7 @@ defmodule AshWeb.Schema.PostTypes do
     field :author, :author, resolve: dataloader(Blog)
   end
 
+  @desc "Update post parameters"
   input_object :update_post_params do
     field :title, :string
     field :word_count, :integer

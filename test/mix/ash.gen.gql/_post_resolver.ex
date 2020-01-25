@@ -1,42 +1,47 @@
 defmodule AshWeb.Schema.PostResolver do
-  alias Ash.Blog
-  alias AppWeb.ErrorHelper
+  alias AshServer.Accounts
 
-  def all(_args, _info) do
-    {:ok, Blog.list_posts()}
+  def all(args, _info) do
+    {:ok, Accounts.list_posts(args)}
   end
 
   def find(%{id: id}, _info) do
-    try do
-      post = Blog.get_post!(id)
-      {:ok, post}
-    rescue
-      error -> {:error, Exception.message(error)}
+    Accounts.fetch_post(id)
+  end
+
+  def find(args, _info) do
+    case Accounts.get_post_by(args) do
+      nil -> {:error, "Can't find a post with given parameters."}
+      post -> {:ok, post}
     end
   end
 
   def create(args, _info) do
-    case Blog.create_post(args) do
+    case Accounts.create_post(args) do
       {:ok, post} -> {:ok, post}
-      {:error, changeset} -> ErrorHelper.format_errors(changeset)
+      error -> error
     end
   end
 
-  def update(%{id: id, post: post_params}, _info) do
-    try do
-      Blog.get_post!(id)
-      |> Blog.update_post(post_params)
-    rescue
-      error -> {:error, Exception.message(error)}
+  def update(%{id: id, post: post_params}, info) do
+    %{current_user: current_user} = info.context
+
+    with {:ok, post} <- Accounts.fetch_post(id) do
+      case Accounts.permit(:update_post, current_user, post) do
+        :ok -> Accounts.update_post(post, post_params)
+        error -> error
+      end
     end
   end
 
-  def delete(%{id: id}, _info) do
-    try do
-      Blog.get_post!(id)
-      |> Blog.delete_post()
-    rescue
-      error -> {:error, Exception.message(error)}
+  def delete(%{id: id}, info) do
+    %{current_user: current_user} = info.context
+
+    with {:ok, post} <- Accounts.fetch_post(id) do
+      case Accounts.permit(:delete_post, current_user, post) do
+        :ok -> Accounts.delete_post(post)
+        error -> error
+      end
     end
   end
 end

@@ -152,16 +152,19 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
             end)
             |> Repo.all
         """
-        assert file =~ ~S"""
-          def filter_posts_with(query, filter) do
-            Enum.reduce(filter, query, fn
-              {:slug, slug}, query ->
-                from q in query, where: ilike(q.slug, ^"%#{slug}%")
-              {:title, title}, query ->
-                from q in query, where: ilike(q.title, ^"%#{title}%")
+        assert file =~ """
+          def fetch_post(id), do: Repo.fetch(Post, id)
         """
         assert file =~ """
           def get_post!(id), do: Repo.get!(Post, id)
+        """
+        assert file =~ ~S"""
+          def get_post_by(args \\ %{}) do
+            Post
+            |> QueryHelpers.build_query(args)
+            |> first
+            |> Repo.one
+          end
         """
         assert file =~ ~S"""
           def create_post(attrs \\ %{}) do
@@ -213,7 +216,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       Gen.Context.run(~w(Blog Comment comments title:string))
 
       assert_received {:mix_shell, :info, ["You are generating into an existing context" <> notice]}
-      assert notice =~ "Ash.Blog context currently has 7 functions and 4 files in its directory"
+      assert notice =~ "Ash.Blog context currently has 8 functions and 4 files in its directory"
       assert_received {:mix_shell, :yes?, ["Would you like to proceed?"]}
 
       assert_file("lib/ash/blog/comment.ex", fn file ->
@@ -234,6 +237,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
 
       assert_file("lib/ash/blog/_blog.ex", fn file ->
         assert file =~ "def get_comment!"
+        assert file =~ "def fetch_comment"
         assert file =~ "def list_comments"
         assert file =~ "def create_comment"
         assert file =~ "def update_comment"
@@ -256,6 +260,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
 
       assert_file("lib/ash/blog/_blog.ex", fn file ->
         assert file =~ "def get_post!"
+        assert file =~ "def fetch_post"
         assert file =~ "def list_posts"
         assert file =~ "def create_post"
         assert file =~ "def update_post"

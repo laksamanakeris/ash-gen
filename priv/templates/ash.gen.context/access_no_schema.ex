@@ -15,6 +15,16 @@
   end
 
   @doc """
+  Gets a single <%= schema.singular %> and returns a tuple with result.
+  ## Examples
+      iex> fetch_<%= schema.singular %>(123)
+      {:ok, %User{}}
+      iex> fetch_<%= schema.singular %>(456)
+      {:error, %EctoQuery{}}
+  """
+  def fetch_<%= schema.singular %>(id), do: raise "TODO"
+
+  @doc """
   Gets a single <%= schema.singular %>.
 
   Raises if the <%= schema.human_singular %> does not exist.

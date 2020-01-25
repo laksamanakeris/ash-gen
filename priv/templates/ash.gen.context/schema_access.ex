@@ -21,12 +21,19 @@
     |> Repo.all
   end
 
-  def filter_<%= schema.plural %>_with(query, filter) do
-    Enum.reduce(filter, query, fn<%= for {k, _v} <- schema.attrs do %>
-      {:<%= k %>, <%= k %>}, query ->
-        from q in query, where: ilike(q.<%= k %>, ^"%#{<%= k %>}%")<% end %>
-    end)
-  end
+  @doc """
+  Gets a single <%= schema.singular %> and returns a tuple with result.
+
+  ## Examples
+  s
+      iex> fetch_<%= schema.singular %>(123)
+      {:ok, %<%= inspect schema.alias %>{}}
+
+      iex> fetch_<%= schema.singular %>(456)
+      {:error, %EctoQuery{}}
+
+  """
+  def fetch_<%= schema.singular %>(id), do: Repo.fetch(<%= inspect schema.alias %>, id)
 
   @doc """
   Gets a single <%= schema.singular %>.
@@ -43,6 +50,27 @@
 
   """
   def get_<%= schema.singular %>!(id), do: Repo.get!(<%= inspect schema.alias %>, id)
+
+  @doc """
+  Gets a single <%= schema.singular %> by specified criteria.
+
+  Raises `Ecto.NoResultsError` if the <%= inspect schema.alias %> does not exist.
+
+  ## Examples
+
+      iex> get_<%= schema.singular %>_by(%{field: "good_val"})
+      %<%= inspect schema.alias %>{}
+
+      iex> get_<%= schema.singular %>_by(%{field: "bad_val"})
+      ** (Ecto.NoResultsError)s
+
+  """
+  def get_<%= schema.singular %>_by(args \\ %{}) do
+    <%= inspect schema.alias %>
+    |> QueryHelpers.build_query(args)
+    |> first
+    |> Repo.one
+  end
 
   @doc """
   Creates a <%= schema.singular %>.

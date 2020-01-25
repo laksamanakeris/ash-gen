@@ -13,6 +13,7 @@ defmodule <%= inspect gql.schema_alias %>Types do
     field <%= inspect n %>, <%= inspect n %>, resolve: dataloader(<%= inspect context.alias %>)<% end %>
   end
 
+  @desc "Update <%= schema.singular %> parameters"
   input_object :update_<%= schema.singular %>_params do<%= for {k, v} <- schema.attrs do %>
     field <%= inspect k %>, <%= inspect v %><% end %><%= for {_n, i, _m, _s} <- schema.assocs do %>
     field <%= inspect i %>, :id<% end %>
