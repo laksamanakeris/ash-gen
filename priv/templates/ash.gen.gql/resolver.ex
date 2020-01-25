@@ -1,23 +1,23 @@
 defmodule <%= inspect gql.schema_alias %>Resolver do
-  alias AshServer.Accounts
+  alias <%= inspect context.module %>
 
   def all(args, _info) do
-    {:ok, Accounts.list_<%= schema.singular %>s(args)}
+    {:ok, <%= inspect context.alias %>.list_<%= schema.singular %>s(args)}
   end
 
   def find(%{id: id}, _info) do
-    Accounts.fetch_<%= schema.singular %>(id)
+    <%= inspect context.alias %>.fetch_<%= schema.singular %>(id)
   end
 
   def find(args, _info) do
-    case Accounts.get_<%= schema.singular %>_by(args) do
+    case <%= inspect context.alias %>.get_<%= schema.singular %>_by(args) do
       nil -> {:error, "Can't find a <%= schema.singular %> with given parameters."}
       <%= schema.singular %> -> {:ok, <%= schema.singular %>}
     end
   end
 
   def create(args, _info) do
-    case Accounts.create_<%= schema.singular %>(args) do
+    case <%= inspect context.alias %>.create_<%= schema.singular %>(args) do
       {:ok, <%= schema.singular %>} -> {:ok, <%= schema.singular %>}
       error -> error
     end
@@ -26,9 +26,9 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
   def update(%{id: id, <%= schema.singular %>: <%= schema.singular %>_params}, info) do
     %{current_user: current_user} = info.context
 
-    with {:ok, <%= schema.singular %>} <- Accounts.fetch_<%= schema.singular %>(id) do
-      case Accounts.permit(:update_<%= schema.singular %>, current_user, <%= schema.singular %>) do
-        :ok -> Accounts.update_<%= schema.singular %>(<%= schema.singular %>, <%= schema.singular %>_params)
+    with {:ok, <%= schema.singular %>} <- <%= inspect context.alias %>.fetch_<%= schema.singular %>(id) do
+      case <%= inspect context.alias %>.permit(:update_<%= schema.singular %>, current_user, <%= schema.singular %>) do
+        :ok -> <%= inspect context.alias %>.update_<%= schema.singular %>(<%= schema.singular %>, <%= schema.singular %>_params)
         error -> error
       end
     end
@@ -37,9 +37,9 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
   def delete(%{id: id}, info) do
     %{current_user: current_user} = info.context
 
-    with {:ok, <%= schema.singular %>} <- Accounts.fetch_<%= schema.singular %>(id) do
-      case Accounts.permit(:delete_<%= schema.singular %>, current_user, <%= schema.singular %>) do
-        :ok -> Accounts.delete_<%= schema.singular %>(<%= schema.singular %>)
+    with {:ok, <%= schema.singular %>} <- <%= inspect context.alias %>.fetch_<%= schema.singular %>(id) do
+      case <%= inspect context.alias %>.permit(:delete_<%= schema.singular %>, current_user, <%= schema.singular %>) do
+        :ok -> <%= inspect context.alias %>.delete_<%= schema.singular %>(<%= schema.singular %>)
         error -> error
       end
     end
