@@ -143,13 +143,8 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       assert_file("lib/ash/blog/_blog.ex", fn file ->
         assert file =~ """
           def list_posts(args) do
-            args
-            |> Enum.reduce(Post, fn
-              {:filter, filter}, query ->
-                filter_posts_with(query, filter)
-              {:order_by, order}, query ->
-                QueryHelpers.order_list_by(query, order)
-            end)
+            Post
+            |> QueryHelpers.build_query(args)
             |> Repo.all
         """
         assert file =~ """

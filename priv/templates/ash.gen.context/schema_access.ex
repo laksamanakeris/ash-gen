@@ -11,13 +11,8 @@
 
   """
   def list_<%= schema.plural %>(args) do
-    args
-    |> Enum.reduce(<%= inspect schema.alias %>, fn
-      {:filter, filter}, query ->
-        filter_<%= schema.plural %>_with(query, filter)
-      {:order_by, order}, query ->
-        QueryHelpers.order_list_by(query, order)
-    end)
+    <%= inspect schema.alias %>
+    |> QueryHelpers.build_query(args)
     |> Repo.all
   end
 
