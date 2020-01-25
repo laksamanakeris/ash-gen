@@ -44,10 +44,12 @@ defmodule Mix.Tasks.Ash.Gen.Schema do
   def copy_new_files(ctx, paths, binding) do
     files = files_to_be_generated(ctx.schema)
     Mix.Ash.copy_from(paths, "priv/templates/ash.gen.schema", binding, files)
-    inject_factory_access(ctx, paths, binding)
 
     struct(Mix.Phoenix.Schema, Map.from_struct(ctx.schema))
     |> Mix.Tasks.Phx.Gen.Schema.copy_new_files(paths, binding)
+
+    inject_factory_access(ctx, paths, binding)
+    inject_filter_access(ctx, paths, binding)
 
     ctx
   end
@@ -63,5 +65,11 @@ defmodule Mix.Tasks.Ash.Gen.Schema do
     paths
     |> Mix.Ash.eval_from("priv/templates/ash.gen.schema/factory_access.ex", binding)
     |> Mix.Ash.inject_eex_before_final_end(ctx.factory_file, binding)
+  end
+
+  defp inject_filter_access(ctx, paths, binding) do
+    paths
+    |> Mix.Ash.eval_from("priv/templates/ash.gen.schema/filter_access.ex", binding)
+    |> Mix.Ash.inject_eex_before_final_end(ctx.schema.file, binding)
   end
 end

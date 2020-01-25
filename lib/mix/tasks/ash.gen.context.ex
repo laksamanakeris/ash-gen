@@ -87,9 +87,6 @@ defmodule Mix.Tasks.Ash.Gen.Context do
     if schema.generate? do
       ctx = Gen.Schema.create_alt_context(schema)
       Gen.Schema.copy_new_files(ctx, paths, binding ++ [ctx: ctx])
-
-      struct(Mix.Phoenix.Schema, Map.from_struct(schema))
-      |> Mix.Tasks.Phx.Gen.Schema.copy_new_files(paths, binding)
     end
 
     inject_schema_access(context, paths, binding)

@@ -209,12 +209,10 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
         assert file =~ "create unique_index(:posts, [:slug])"
       end)
 
-      send(self(), {:mix_shell_input, :yes?, true})
+      send self(), {:mix_shell_input, :yes?, true}
       Gen.Context.run(~w(Blog Comment comments title:string))
 
-      assert_received {:mix_shell, :info,
-        ["You are generating into an existing context" <> notice]}
-
+      assert_received {:mix_shell, :info, ["You are generating into an existing context" <> notice]}
       assert notice =~ "Ash.Blog context currently has 7 functions and 4 files in its directory"
       assert_received {:mix_shell, :yes?, ["Would you like to proceed?"]}
 

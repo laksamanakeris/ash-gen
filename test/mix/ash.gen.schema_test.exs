@@ -15,6 +15,21 @@ defmodule Mix.Tasks.Ash.Gen.SchemaTest do
     in_tmp_project(config.test, fn ->
       Gen.Schema.run(~w(Blog.Post posts title:string word_count:integer is_draft:boolean author:references:post))
 
+      assert_file("lib/ash/blog/post.ex", fn file ->
+        assert file =~ ~S"""
+          def filter_with(query, filter) do
+            Enum.reduce(filter, query, fn
+              {:title, title}, query ->
+                from q in query, where: ilike(q.title, ^"%#{title}%")
+              {:word_count, word_count}, query ->
+                from q in query, where: ilike(q.word_count, ^"%#{word_count}%")
+              {:is_draft, is_draft}, query ->
+                from q in query, where: ilike(q.is_draft, ^"%#{is_draft}%")
+            end)
+          end
+        """
+      end)
+
       assert_file("test/support/factory.ex", fn file ->
         assert file =~ """
         defmodule Ash.Factory do
