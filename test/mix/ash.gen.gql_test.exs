@@ -25,128 +25,23 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
   end
 
   test "generates a graphql resource", config do
+    {:ok, expected_post_resolver} = File.read("test/mix/ash.gen.gql/_post_resolver.ex")
+    {:ok, expected_post_types} = File.read("test/mix/ash.gen.gql/_post_types.ex")
+    {:ok, expected_post_resolver_test} = File.read("test/mix/ash.gen.gql/_post_resolver_test.ex")
+
     in_tmp_project(config.test, fn ->
       Gen.Gql.run(~w(Blog Post posts title:string word_count:integer is_draft:boolean author:references:post))
 
-      # assert_file("lib/ash/blog/post.ex", fn file ->
-      #   assert file =~ "field :title, :string"
-      # end)
-
-      assert_file("lib/ash_web/schema/post/post_resolver.ex", fn file ->
-        assert file =~ """
-        defmodule AshWeb.Schema.PostResolver do
-          alias Ash.Blog
-          alias AppWeb.ErrorHelper
-
-          def all(_args, _info) do
-            {:ok, Blog.list_posts()}
-          end
-
-          def find(%{id: id}, _info) do
-            try do
-              post = Blog.get_post!(id)
-              {:ok, post}
-            rescue
-              error -> {:error, Exception.message(error)}
-            end
-          end
-
-          def create(args, _info) do
-            case Blog.create_post(args) do
-              {:ok, post} -> {:ok, post}
-              {:error, changeset} -> ErrorHelper.format_errors(changeset)
-            end
-          end
-
-          def update(%{id: id, post: post_params}, _info) do
-            try do
-              Blog.get_post!(id)
-              |> Blog.update_post(post_params)
-            rescue
-              error -> {:error, Exception.message(error)}
-            end
-          end
-
-          def delete(%{id: id}, _info) do
-            try do
-              Blog.get_post!(id)
-              |> Blog.delete_post()
-            rescue
-              error -> {:error, Exception.message(error)}
-            end
-          end
-        end
-        """
+      assert_file("lib/ash_web/schema/post/post_types.ex", fn file ->
+        assert file =~ expected_post_types
       end)
 
-      assert_file("test/ash_web/schema/post/post_resolver_test.exs")
+      assert_file("lib/ash_web/schema/post/post_resolver.ex", fn file ->
+        assert file =~ expected_post_resolver
+      end)
 
-      assert_file("lib/ash_web/schema/post/post_types.ex", fn file ->
-        assert file =~ """
-        defmodule AshWeb.Schema.PostTypes do
-          use Absinthe.Schema.Notation
-          use Absinthe.Ecto, repo: App.Repo
-
-          import Absinthe.Resolution.Helpers, only: [dataloader: 1]
-
-          alias AshWeb.Schema.PostResolver
-
-          @desc "A post"
-          object :post do
-            field :id, :id
-            field :title, :string
-            field :word_count, :integer
-            field :is_draft, :boolean
-            field :author, :author, resolve: dataloader(Blog)
-          end
-
-          input_object :update_post_params do
-            field :title, :string
-            field :word_count, :integer
-            field :is_draft, :boolean
-            field :author, :id
-          end
-
-          object :post_queries do
-            @desc "A single post"
-            field :post, non_null(:post) do
-              arg :id, non_null(:id)
-              resolve &PostResolver.find/2
-            end
-
-            @desc "A list of posts"
-            field :posts, list_of(:post) do
-              resolve &PostResolver.all/2
-            end
-          end
-
-          object :post_mutations do
-            @desc "Create a post"
-            field :create_post, :post do
-              arg :title, :string
-              arg :word_count, :integer
-              arg :is_draft, :boolean
-              arg :author, :id
-
-              resolve &PostResolver.create/2
-            end
-
-            @desc "Update a post"
-            field :update_post, :post do
-              arg :id, non_null(:id)
-              arg :post, :update_post_params
-
-              resolve &PostResolver.update/2
-            end
-
-            @desc "Delete a post"
-            field :delete_post, :post do
-              arg :id, non_null(:id)
-
-              resolve &PostResolver.delete/2
-            end
-          end
-        """
+      assert_file("test/ash_web/schema/post/post_resolver_test.exs", fn file ->
+        assert file =~ expected_post_resolver_test
       end)
     end)
   end

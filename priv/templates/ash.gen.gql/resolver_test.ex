@@ -98,7 +98,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
       response = post_gql(conn, %{query: query, variables: variables})
 
       assert response["data"]["update<%= inspect schema.alias %>"] == %{
-        "id" => to_string(<%= schema.singular %>.id), <%= for {k, _v} <- schema.attrs do %>
+        "id" => to_string(<%= schema.singular %>.id),<%= for {k, _v} <- schema.attrs do %>
         "<%= k %>" => variables.<%= schema.singular %>.<%= k %>,<% end %>
       }
     end
