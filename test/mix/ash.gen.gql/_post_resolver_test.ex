@@ -43,10 +43,10 @@ defmodule AshWeb.PostResolverTest do
       }
     end
 
-  test "errors when looking for a nonexistent post by id", %{conn: conn} do
+  test "errors when attempting to find a nonexistent post", %{conn: conn} do
       query = """
         {
-          post(id: "doesnt exist") {
+          post(id: -1) {
             id
           }
         }
@@ -54,8 +54,14 @@ defmodule AshWeb.PostResolverTest do
 
       response = post_gql(conn, %{query: query})
 
-      assert response["data"] == nil
-      assert response["errors"]
+      assert response == %{
+        "data" => %{"post" => nil},
+        "errors" => [%{
+          "locations" => [%{"column" => 0, "line" => 2}],
+          "message" => "Post not found",
+          "path" => ["post"]
+        }]
+      }
     end
 
     test "creates a new post", %{conn: conn} do

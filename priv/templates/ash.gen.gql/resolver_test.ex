@@ -39,10 +39,10 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
       }
     end
 
-  test "errors when looking for a nonexistent <%= schema.singular %> by id", %{conn: conn} do
+  test "errors when attempting to find a nonexistent <%= schema.singular %>", %{conn: conn} do
       query = """
         {
-          <%= schema.singular %>(id: "doesnt exist") {
+          <%= schema.singular %>(id: -1) {
             id
           }
         }
@@ -50,8 +50,14 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
 
       response = post_gql(conn, %{query: query})
 
-      assert response["data"] == nil
-      assert response["errors"]
+      assert response == %{
+        "data" => %{"<%= schema.singular %>" => nil},
+        "errors" => [%{
+          "locations" => [%{"column" => 0, "line" => 2}],
+          "message" => "<%= inspect schema.alias %> not found",
+          "path" => ["<%= schema.singular %>"]
+        }]
+      }
     end
 
     test "creates a new <%= schema.singular %>", %{conn: conn} do
