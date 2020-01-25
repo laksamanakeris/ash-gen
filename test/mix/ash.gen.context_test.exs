@@ -148,7 +148,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
               {:filter, filter}, query ->
                 filter_posts_with(query, filter)
               {:order_by, order}, query ->
-                Helpers.order_list_by(query, order)
+                QueryHelpers.order_list_by(query, order)
             end)
             |> Repo.all
         """

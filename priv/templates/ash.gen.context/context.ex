@@ -6,5 +6,5 @@ defmodule <%= inspect context.module %> do
   import Ecto.Query, warn: false
   use <%= inspect context.base_module %>.Helpers.UsePolicy
   alias <%= inspect schema.repo %>
-  alias <%= inspect context.base_module %>
+  alias <%= inspect context.base_module %>.Helpers.QueryHelpers
 end

@@ -11,7 +11,7 @@ defmodule Mix.Tasks.Ash.Gen.SchemaTest do
     :ok
   end
 
-  test "generates additional schema files", config do
+  test "generates additional schema data", config do
     in_tmp_project(config.test, fn ->
       Gen.Schema.run(~w(Blog.Post posts title:string word_count:integer is_draft:boolean author:references:post))
 

@@ -16,7 +16,7 @@
       {:filter, filter}, query ->
         filter_<%= schema.plural %>_with(query, filter)
       {:order_by, order}, query ->
-        Helpers.order_list_by(query, order)
+        QueryHelpers.order_list_by(query, order)
     end)
     |> Repo.all
   end
