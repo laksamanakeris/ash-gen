@@ -128,8 +128,6 @@ defmodule AshWeb.PostResolverTest do
     end
 
     test "errors updating a nonexistent post", %{conn: conn} do
-      post = insert(:post)
-
       query = """
         mutation UpdatePost($id: ID!, $post: UpdatePostParams!) {
           updatePost(id:$id, post:$post) {
@@ -174,11 +172,9 @@ defmodule AshWeb.PostResolverTest do
     end
 
     test "errors deleting a nonexistent post", %{conn: conn} do
-      post = insert(:post)
-
       query = """
         mutation {
-          deletePost(id: -1}) {
+          deletePost(id: -1) {
             id
           }
         }
