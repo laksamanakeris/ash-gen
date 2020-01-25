@@ -43,7 +43,7 @@ defmodule AshWeb.PostResolverTest do
       }
     end
 
-  test "errors when attempting to find a nonexistent post", %{conn: conn} do
+    test "errors when attempting to find a nonexistent post", %{conn: conn} do
       query = """
         {
           post(id: -1) {
@@ -126,23 +126,74 @@ defmodule AshWeb.PostResolverTest do
         "is_draft" => variables.post.is_draft,
       }
     end
-  end
 
-  test "deletes a post", %{conn: conn} do
-    post = insert(:post)
+    test "errors updating a nonexistent post", %{conn: conn} do
+      post = insert(:post)
 
-    query = """
-      mutation {
-        deletePost(id: #{post.id}) {
-          id
+      query = """
+        mutation UpdatePost($id: ID!, $post: UpdatePostParams!) {
+          updatePost(id:$id, post:$post) {
+            id
+          }
         }
+      """
+
+      variables = %{
+        id: "-1",
+        post: %{}
       }
-    """
 
-    response = post_gql(conn, %{query: query})
+      response = post_gql(conn, %{query: query, variables: variables})
 
-    assert response["data"]["deletePost"] == %{
-      "id" => to_string(post.id)
-    }
+      assert response == %{
+        "data" => %{"updatePost" => nil},
+        "errors" => [%{
+          "locations" => [%{"column" => 0, "line" => 2}],
+          "message" => "Post not found",
+          "path" => ["updatePost"]
+        }]
+      }
+    end
+
+    test "deletes a post", %{conn: conn} do
+      post = insert(:post)
+
+      query = """
+        mutation {
+          deletePost(id: #{post.id}) {
+            id
+          }
+        }
+      """
+
+      response = post_gql(conn, %{query: query})
+
+      assert response["data"]["deletePost"] == %{
+        "id" => to_string(post.id)
+      }
+    end
+
+    test "errors deleting a nonexistent post", %{conn: conn} do
+      post = insert(:post)
+
+      query = """
+        mutation {
+          deletePost(id: -1}) {
+            id
+          }
+        }
+      """
+
+      response = post_gql(conn, %{query: query})
+
+      assert response == %{
+        "data" => %{"deletePost" => nil},
+        "errors" => [%{
+          "locations" => [%{"column" => 0, "line" => 2}],
+          "message" => "Post not found",
+          "path" => ["deletePost"]
+        }]
+      }
+    end
   end
 end

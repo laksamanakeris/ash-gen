@@ -39,7 +39,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
       }
     end
 
-  test "errors when attempting to find a nonexistent <%= schema.singular %>", %{conn: conn} do
+    test "errors when attempting to find a nonexistent <%= schema.singular %>", %{conn: conn} do
       query = """
         {
           <%= schema.singular %>(id: -1) {
@@ -108,23 +108,74 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
         "<%= k %>" => variables.<%= schema.singular %>.<%= k %>,<% end %>
       }
     end
-  end
 
-  test "deletes a <%= schema.singular %>", %{conn: conn} do
-    <%= schema.singular %> = insert(:<%= schema.singular %>)
+    test "errors updating a nonexistent <%= schema.singular %>", %{conn: conn} do
+      <%= schema.singular %> = insert(:<%= schema.singular %>)
 
-    query = """
-      mutation {
-        delete<%= inspect schema.alias %>(id: #{<%= schema.singular %>.id}) {
-          id
+      query = """
+        mutation Update<%= inspect schema.alias %>($id: ID!, $<%= schema.singular %>: Update<%= inspect schema.alias %>Params!) {
+          update<%= inspect schema.alias %>(id:$id, <%= schema.singular %>:$<%= schema.singular %>) {
+            id
+          }
         }
+      """
+
+      variables = %{
+        id: "-1",
+        post: %{}
       }
-    """
 
-    response = post_gql(conn, %{query: query})
+      response = post_gql(conn, %{query: query, variables: variables})
 
-    assert response["data"]["delete<%= inspect schema.alias %>"] == %{
-      "id" => to_string(<%= schema.singular %>.id)
-    }
+      assert response == %{
+        "data" => %{"update<%= inspect schema.alias %>" => nil},
+        "errors" => [%{
+          "locations" => [%{"column" => 0, "line" => 2}],
+          "message" => "<%= inspect schema.alias %> not found",
+          "path" => ["update<%= inspect schema.alias %>"]
+        }]
+      }
+    end
+
+    test "deletes a <%= schema.singular %>", %{conn: conn} do
+      <%= schema.singular %> = insert(:<%= schema.singular %>)
+
+      query = """
+        mutation {
+          delete<%= inspect schema.alias %>(id: #{<%= schema.singular %>.id}) {
+            id
+          }
+        }
+      """
+
+      response = post_gql(conn, %{query: query})
+
+      assert response["data"]["delete<%= inspect schema.alias %>"] == %{
+        "id" => to_string(<%= schema.singular %>.id)
+      }
+    end
+
+    test "errors deleting a nonexistent <%= schema.singular %>", %{conn: conn} do
+      <%= schema.singular %> = insert(:<%= schema.singular %>)
+
+      query = """
+        mutation {
+          delete<%= inspect schema.alias %>(id: -1}) {
+            id
+          }
+        }
+      """
+
+      response = post_gql(conn, %{query: query})
+
+      assert response == %{
+        "data" => %{"delete<%= inspect schema.alias %>" => nil},
+        "errors" => [%{
+          "locations" => [%{"column" => 0, "line" => 2}],
+          "message" => "<%= inspect schema.alias %> not found",
+          "path" => ["delete<%= inspect schema.alias %>"]
+        }]
+      }
+    end
   end
 end
