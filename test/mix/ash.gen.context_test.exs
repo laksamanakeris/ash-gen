@@ -154,14 +154,6 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
           def get_post!(id), do: Repo.get!(Post, id)
         """
         assert file =~ ~S"""
-          def get_post_by(args \\ %{}) do
-            Post
-            |> QueryHelpers.build_query(args)
-            |> first
-            |> Repo.one
-          end
-        """
-        assert file =~ ~S"""
           def create_post(attrs \\ %{}) do
             %Post{}
             |> Post.changeset(attrs)
@@ -211,7 +203,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       Gen.Context.run(~w(Blog Comment comments title:string))
 
       assert_received {:mix_shell, :info, ["You are generating into an existing context" <> notice]}
-      assert notice =~ "Ash.Blog context currently has 8 functions and 4 files in its directory"
+      assert notice =~ "Ash.Blog context currently has 7 functions and 4 files in its directory"
       assert_received {:mix_shell, :yes?, ["Would you like to proceed?"]}
 
       assert_file("lib/ash/blog/comment.ex", fn file ->

@@ -9,17 +9,10 @@ defmodule AshWeb.Schema.PostResolver do
     Blog.fetch_post(id)
   end
 
-  def find(args, _info) do
-    case Blog.get_post_by(args) do
-      nil -> {:error, "Can't find a post with given parameters."}
-      post -> {:ok, post}
-    end
-  end
-
   def create(args, _info) do
     case Blog.create_post(args) do
       {:ok, post} -> {:ok, post}
-      error -> error
+      {:error, error} -> {:error, error}
     end
   end
 
@@ -29,7 +22,7 @@ defmodule AshWeb.Schema.PostResolver do
     with {:ok, post} <- Blog.fetch_post(id) do
       case Blog.permit(:update_post, current_user, post) do
         :ok -> Blog.update_post(post, post_params)
-        error -> error
+        {:error, error} -> {:error, error}
       end
     end
   end
@@ -40,7 +33,7 @@ defmodule AshWeb.Schema.PostResolver do
     with {:ok, post} <- Blog.fetch_post(id) do
       case Blog.permit(:delete_post, current_user, post) do
         :ok -> Blog.delete_post(post)
-        error -> error
+        {:error, error} -> {:error, error}
       end
     end
   end

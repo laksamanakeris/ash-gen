@@ -9,17 +9,10 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
     <%= inspect context.alias %>.fetch_<%= schema.singular %>(id)
   end
 
-  def find(args, _info) do
-    case <%= inspect context.alias %>.get_<%= schema.singular %>_by(args) do
-      nil -> {:error, "Can't find a <%= schema.singular %> with given parameters."}
-      <%= schema.singular %> -> {:ok, <%= schema.singular %>}
-    end
-  end
-
   def create(args, _info) do
     case <%= inspect context.alias %>.create_<%= schema.singular %>(args) do
       {:ok, <%= schema.singular %>} -> {:ok, <%= schema.singular %>}
-      error -> error
+      {:error, error} -> {:error, error}
     end
   end
 
@@ -29,7 +22,7 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
     with {:ok, <%= schema.singular %>} <- <%= inspect context.alias %>.fetch_<%= schema.singular %>(id) do
       case <%= inspect context.alias %>.permit(:update_<%= schema.singular %>, current_user, <%= schema.singular %>) do
         :ok -> <%= inspect context.alias %>.update_<%= schema.singular %>(<%= schema.singular %>, <%= schema.singular %>_params)
-        error -> error
+        {:error, error} -> {:error, error}
       end
     end
   end
@@ -40,7 +33,7 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
     with {:ok, <%= schema.singular %>} <- <%= inspect context.alias %>.fetch_<%= schema.singular %>(id) do
       case <%= inspect context.alias %>.permit(:delete_<%= schema.singular %>, current_user, <%= schema.singular %>) do
         :ok -> <%= inspect context.alias %>.delete_<%= schema.singular %>(<%= schema.singular %>)
-        error -> error
+        {:error, error} -> {:error, error}
       end
     end
   end
