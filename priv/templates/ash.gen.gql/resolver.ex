@@ -3,7 +3,7 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
   alias <%= inspect context.module %>
 
   def all(args, _info) do
-    {:ok, <%= inspect context.alias %>.list_<%= schema.singular %>s(args)}
+    {:ok, <%= inspect context.alias %>.list_<%= schema.plural %>(args)}
   end
 
   def find(%{id: id}, _info) do
