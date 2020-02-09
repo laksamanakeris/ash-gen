@@ -1,4 +1,5 @@
 defmodule <%= inspect gql.schema_alias %>Resolver do
+  alias <%= inspect context.base_module %>.Accounts.User
   alias <%= inspect context.module %>
 
   def all(args, _info) do
@@ -17,24 +18,24 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
   end
 
   def update(%{id: id, <%= schema.singular %>: <%= schema.singular %>_params}, info) do
-    %{current_user: current_user} = info.context
-
-    with {:ok, <%= schema.singular %>} <- <%= inspect context.alias %>.fetch_<%= schema.singular %>(id) do
-      case <%= inspect context.alias %>.permit(:update_<%= schema.singular %>, current_user, <%= schema.singular %>) do
-        :ok -> <%= inspect context.alias %>.update_<%= schema.singular %>(<%= schema.singular %>, <%= schema.singular %>_params)
-        {:error, error} -> {:error, error}
-      end
+    with %{current_user: %User{} = current_user} = info.context,
+    {:ok, <%= schema.singular %>} <- <%= inspect context.alias %>.fetch_<%= schema.singular %>(id),
+    :ok <- <%= inspect context.alias %>.permit(:update_<%= schema.singular %>, current_user, <%= schema.singular %>) do
+      <%= inspect context.alias %>.update_<%= schema.singular %>(<%= schema.singular %>, <%= schema.singular %>_params)
+    else
+      {:error, error} -> {:error, error}
+      _ -> {:error, "Something went wrong"}
     end
   end
 
   def delete(%{id: id}, info) do
-    %{current_user: current_user} = info.context
-
-    with {:ok, <%= schema.singular %>} <- <%= inspect context.alias %>.fetch_<%= schema.singular %>(id) do
-      case <%= inspect context.alias %>.permit(:delete_<%= schema.singular %>, current_user, <%= schema.singular %>) do
-        :ok -> <%= inspect context.alias %>.delete_<%= schema.singular %>(<%= schema.singular %>)
-        {:error, error} -> {:error, error}
-      end
+    with %{current_user: %User{} = current_user} = info.context,
+    {:ok, <%= schema.singular %>} <- <%= inspect context.alias %>.fetch_<%= schema.singular %>(id),
+    :ok <- <%= inspect context.alias %>.permit(:delete_<%= schema.singular %>, current_user, <%= schema.singular %>) do
+      <%= inspect context.alias %>.delete_<%= schema.singular %>(<%= schema.singular %>)
+    else
+      {:error, error} -> {:error, error}
+      _ -> {:error, "Something went wrong"}
     end
   end
 end

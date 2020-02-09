@@ -25,7 +25,7 @@ defmodule AshWeb.Schema.PostTypes do
 
   object :post_queries do
     @desc "A single post"
-    field :post, non_null(:post) do
+    field :post, :post do
       arg :id, non_null(:id)
       resolve &PostResolver.find/2
     end

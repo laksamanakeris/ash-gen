@@ -8,9 +8,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
 
       query = """
         {
-          <%= schema.plural %> {
-            id
-          }
+          <%= schema.plural %> { id }
         }
       """
 
@@ -42,9 +40,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
     test "errors when attempting to find a nonexistent <%= schema.singular %>", %{conn: conn} do
       query = """
         {
-          <%= schema.singular %>(id: -1) {
-            id
-          }
+          <%= schema.singular %>(id: 0) { id }
         }
       """
 
@@ -112,14 +108,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
     test "errors updating a nonexistent <%= schema.singular %>", %{conn: conn} do
       query = """
         mutation Update<%= inspect schema.alias %>($id: ID!, $<%= schema.singular %>: Update<%= inspect schema.alias %>Params!) {
-          update<%= inspect schema.alias %>(id:$id, <%= schema.singular %>:$<%= schema.singular %>) {
-            id
-          }
+          update<%= inspect schema.alias %>(id:$id, <%= schema.singular %>:$<%= schema.singular %>) { id }
         }
       """
 
       variables = %{
-        id: "-1",
+        id: "0",
         post: %{}
       }
 
@@ -140,9 +134,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
 
       query = """
         mutation {
-          delete<%= inspect schema.alias %>(id: #{<%= schema.singular %>.id}) {
-            id
-          }
+          delete<%= inspect schema.alias %>(id: #{<%= schema.singular %>.id}) { id }
         }
       """
 
@@ -156,9 +148,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
     test "errors deleting a nonexistent <%= schema.singular %>", %{conn: conn} do
       query = """
         mutation {
-          delete<%= inspect schema.alias %>(id: -1) {
-            id
-          }
+          delete<%= inspect schema.alias %>(id: 0) { id }
         }
       """
 

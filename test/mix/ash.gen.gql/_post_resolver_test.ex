@@ -8,9 +8,7 @@ defmodule AshWeb.PostResolverTest do
 
       query = """
         {
-          posts {
-            id
-          }
+          posts { id }
         }
       """
 
@@ -46,9 +44,7 @@ defmodule AshWeb.PostResolverTest do
     test "errors when attempting to find a nonexistent post", %{conn: conn} do
       query = """
         {
-          post(id: -1) {
-            id
-          }
+          post(id: 0) { id }
         }
       """
 
@@ -130,14 +126,12 @@ defmodule AshWeb.PostResolverTest do
     test "errors updating a nonexistent post", %{conn: conn} do
       query = """
         mutation UpdatePost($id: ID!, $post: UpdatePostParams!) {
-          updatePost(id:$id, post:$post) {
-            id
-          }
+          updatePost(id:$id, post:$post) { id }
         }
       """
 
       variables = %{
-        id: "-1",
+        id: "0",
         post: %{}
       }
 
@@ -158,9 +152,7 @@ defmodule AshWeb.PostResolverTest do
 
       query = """
         mutation {
-          deletePost(id: #{post.id}) {
-            id
-          }
+          deletePost(id: #{post.id}) { id }
         }
       """
 
@@ -174,9 +166,7 @@ defmodule AshWeb.PostResolverTest do
     test "errors deleting a nonexistent post", %{conn: conn} do
       query = """
         mutation {
-          deletePost(id: -1) {
-            id
-          }
+          deletePost(id: 0) { id }
         }
       """
 

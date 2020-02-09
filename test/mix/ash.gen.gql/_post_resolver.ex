@@ -1,4 +1,5 @@
 defmodule AshWeb.Schema.PostResolver do
+  alias Ash.Accounts.User
   alias Ash.Blog
 
   def all(args, _info) do
@@ -17,24 +18,24 @@ defmodule AshWeb.Schema.PostResolver do
   end
 
   def update(%{id: id, post: post_params}, info) do
-    %{current_user: current_user} = info.context
-
-    with {:ok, post} <- Blog.fetch_post(id) do
-      case Blog.permit(:update_post, current_user, post) do
-        :ok -> Blog.update_post(post, post_params)
-        {:error, error} -> {:error, error}
-      end
+    with %{current_user: %User{} = current_user} = info.context,
+    {:ok, post} <- Blog.fetch_post(id),
+    :ok <- Blog.permit(:update_post, current_user, post) do
+      Blog.update_post(post, post_params)
+    else
+      {:error, error} -> {:error, error}
+      _ -> {:error, "Something went wrong"}
     end
   end
 
   def delete(%{id: id}, info) do
-    %{current_user: current_user} = info.context
-
-    with {:ok, post} <- Blog.fetch_post(id) do
-      case Blog.permit(:delete_post, current_user, post) do
-        :ok -> Blog.delete_post(post)
-        {:error, error} -> {:error, error}
-      end
+    with %{current_user: %User{} = current_user} = info.context,
+    {:ok, post} <- Blog.fetch_post(id),
+    :ok <- Blog.permit(:delete_post, current_user, post) do
+      Blog.delete_post(post)
+    else
+      {:error, error} -> {:error, error}
+      _ -> {:error, "Something went wrong"}
     end
   end
 end

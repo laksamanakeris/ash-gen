@@ -9,12 +9,17 @@
       iex> list_<%= schema.plural %>()
       [%<%= inspect schema.alias %>{}, ...]
 
+      iex> list_<%= schema.plural %>()
+      [%<%= inspect schema.alias %>{}, ...]
+
   """
   def list_<%= schema.plural %>(args) do
     <%= inspect schema.alias %>
     |> QueryHelpers.build_query(args)
     |> Repo.all
   end
+
+  def list_<%= schema.plural %>(), do: Repo.all(<%= inspect schema.alias %>)
 
   @doc """
   Gets a single <%= schema.singular %> and returns a tuple with result.

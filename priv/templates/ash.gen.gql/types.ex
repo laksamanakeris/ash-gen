@@ -21,7 +21,7 @@ defmodule <%= inspect gql.schema_alias %>Types do
 
   object :<%= schema.singular %>_queries do
     @desc "A single <%= schema.singular %>"
-    field :<%= schema.singular %>, non_null(:<%= schema.singular %>) do
+    field :<%= schema.singular %>, :<%= schema.singular %> do
       arg :id, non_null(:id)
       resolve &<%= inspect schema.alias %>Resolver.find/2
     end
