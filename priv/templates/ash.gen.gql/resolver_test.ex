@@ -78,6 +78,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
       }
     end
 
+    @tag :authenticated
     test "updates a <%= schema.singular %>", %{conn: conn} do
       <%= schema.singular %> = insert(:<%= schema.singular %>)
 
@@ -105,6 +106,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
       }
     end
 
+    @tag :authenticated
     test "errors updating a nonexistent <%= schema.singular %>", %{conn: conn} do
       query = """
         mutation Update<%= inspect schema.alias %>($id: ID!, $<%= schema.singular %>: Update<%= inspect schema.alias %>Params!) {
@@ -129,6 +131,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
       }
     end
 
+    @tag :authenticated
     test "deletes a <%= schema.singular %>", %{conn: conn} do
       <%= schema.singular %> = insert(:<%= schema.singular %>)
 
@@ -145,6 +148,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
       }
     end
 
+    @tag :authenticated
     test "errors deleting a nonexistent <%= schema.singular %>", %{conn: conn} do
       query = """
         mutation {

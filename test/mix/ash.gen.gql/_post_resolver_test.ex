@@ -90,6 +90,7 @@ defmodule AshWeb.PostResolverTest do
       }
     end
 
+    @tag :authenticated
     test "updates a post", %{conn: conn} do
       post = insert(:post)
 
@@ -123,6 +124,7 @@ defmodule AshWeb.PostResolverTest do
       }
     end
 
+    @tag :authenticated
     test "errors updating a nonexistent post", %{conn: conn} do
       query = """
         mutation UpdatePost($id: ID!, $post: UpdatePostParams!) {
@@ -147,6 +149,7 @@ defmodule AshWeb.PostResolverTest do
       }
     end
 
+    @tag :authenticated
     test "deletes a post", %{conn: conn} do
       post = insert(:post)
 
@@ -163,6 +166,7 @@ defmodule AshWeb.PostResolverTest do
       }
     end
 
+    @tag :authenticated
     test "errors deleting a nonexistent post", %{conn: conn} do
       query = """
         mutation {
