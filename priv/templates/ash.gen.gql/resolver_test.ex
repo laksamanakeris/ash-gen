@@ -114,7 +114,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect schema.alias %>ResolverT
 
       variables = %{
         id: "0",
-        post: %{}
+        <%= schema.singular %>: %{}
       }
 
       response = post_gql(conn, %{query: query, variables: variables})
