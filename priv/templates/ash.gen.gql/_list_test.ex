@@ -6,7 +6,6 @@ defmodule <%= inspect context.web_module %>.Schema.List<%= schema.human_plural %
     query List<%= schema.human_plural %>($filter: <%= inspect schema.alias %>Filter, $orderBy: <%= inspect schema.alias %>OrderBy) {
       <%= schema.plural %>(filter: $filter, orderBy: $orderBy) {
         id
-        email
       }
     }
   """

@@ -13,10 +13,22 @@ defmodule <%= inspect gql.schema_alias %>Types do
     field <%= inspect n %>, <%= inspect n %>, resolve: dataloader(<%= inspect context.alias %>)<% end %>
   end
 
-  @desc "Update <%= schema.singular %> parameters"
-  input_object :update_<%= schema.singular %>_params do<%= for {k, v} <- schema.attrs do %>
+  @desc "<%= inspect schema.alias %> parameters"
+  input_object :<%= schema.singular %>_params do<%= for {k, v} <- schema.attrs do %>
     field <%= inspect k %>, <%= inspect v %><% end %><%= for {_n, i, _m, _s} <- schema.assocs do %>
     field <%= inspect i %>, :id<% end %>
+  end
+
+  @desc "<%= inspect schema.alias %> filter"
+  input_object :<%= schema.singular %>_filter do
+    field :id, :id<%= for {k, v} <- schema.attrs do %>
+    field <%= inspect k %>, <%= inspect v %><% end %>
+  end
+
+  @desc "<%= inspect schema.alias %> ordering"
+  input_object :<%= schema.singular %>_order_by do
+    field :id, :id<%= for {k, v} <- schema.attrs do %>
+    field <%= inspect k %>, <%= inspect v %><% end %>
   end
 
   object :<%= schema.singular %>_queries do
@@ -28,15 +40,16 @@ defmodule <%= inspect gql.schema_alias %>Types do
 
     @desc "A list of <%= schema.plural %>"
     field :<%= schema.plural %>, list_of(:<%= schema.singular %>) do
+      arg :filter, :<%= schema.singular %>_filter
+      arg :order_by, :<%= schema.singular %>_order_by
       resolve &<%= inspect schema.alias %>Resolver.all/2
     end
   end
 
   object :<%= schema.singular %>_mutations do
     @desc "Create a <%= schema.singular %>"
-    field :create_<%= schema.singular %>, :<%= schema.singular %> do<%= for {k, v} <- schema.attrs do %>
-      arg <%= inspect k %>, <%= inspect v %><% end %><%= for {_n, i, _m, _s} <- schema.assocs do %>
-      arg <%= inspect i %>, :id<% end %>
+    field :create_<%= schema.singular %>, :<%= schema.singular %> do
+      arg :<%= schema.singular %>, :<%= schema.singular %>_params
 
       resolve &<%= inspect schema.alias %>Resolver.create/2
     end
@@ -44,7 +57,7 @@ defmodule <%= inspect gql.schema_alias %>Types do
     @desc "Update a <%= schema.singular %>"
     field :update_<%= schema.singular %>, :<%= schema.singular %> do
       arg :id, non_null(:id)
-      arg :<%= schema.singular %>, :update_<%= schema.singular %>_params
+      arg :<%= schema.singular %>, :<%= schema.singular %>_params
 
       resolve &<%= inspect schema.alias %>Resolver.update/2
     end

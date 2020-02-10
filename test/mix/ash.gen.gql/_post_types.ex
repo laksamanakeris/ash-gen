@@ -15,12 +15,28 @@ defmodule AshWeb.Schema.PostTypes do
     field :author, :author, resolve: dataloader(Blog)
   end
 
-  @desc "Update post parameters"
-  input_object :update_post_params do
+  @desc "Post parameters"
+  input_object :post_params do
     field :title, :string
     field :word_count, :integer
     field :is_draft, :boolean
     field :author, :id
+  end
+
+  @desc "Post filter"
+  input_object :post_filter do
+    field :id, :id
+    field :title, :string
+    field :word_count, :integer
+    field :is_draft, :boolean
+  end
+
+  @desc "Post ordering"
+  input_object :post_order_by do
+    field :id, :id
+    field :title, :string
+    field :word_count, :integer
+    field :is_draft, :boolean
   end
 
   object :post_queries do
@@ -32,6 +48,8 @@ defmodule AshWeb.Schema.PostTypes do
 
     @desc "A list of posts"
     field :posts, list_of(:post) do
+      arg :filter, :post_filter
+      arg :order_by, :post_order_by
       resolve &PostResolver.all/2
     end
   end
@@ -39,10 +57,7 @@ defmodule AshWeb.Schema.PostTypes do
   object :post_mutations do
     @desc "Create a post"
     field :create_post, :post do
-      arg :title, :string
-      arg :word_count, :integer
-      arg :is_draft, :boolean
-      arg :author, :id
+      arg :post, :post_params
 
       resolve &PostResolver.create/2
     end
@@ -50,7 +65,7 @@ defmodule AshWeb.Schema.PostTypes do
     @desc "Update a post"
     field :update_post, :post do
       arg :id, non_null(:id)
-      arg :post, :update_post_params
+      arg :post, :post_params
 
       resolve &PostResolver.update/2
     end
@@ -62,3 +77,4 @@ defmodule AshWeb.Schema.PostTypes do
       resolve &PostResolver.delete/2
     end
   end
+end

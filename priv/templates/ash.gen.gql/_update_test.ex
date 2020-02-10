@@ -11,12 +11,11 @@ defmodule <%= inspect context.web_module %>.Schema.Update<%= inspect schema.alia
     }
   """
 
+  @tag :authenticated
   test "a <%= schema.singular %> can be updated", %{conn: conn} do
     <%= schema.singular %> = insert(:<%= schema.singular %>)
-    <%= schema.singular %>_params = params_for(:<%= schema.singular %>, %{
-      title: "some updated title",
-      word_count: 43,
-      is_draft: false,
+    <%= schema.singular %>_params = params_for(:<%= schema.singular %>, %{<%= for {k, _v} <- schema.attrs do %>
+      <%= k %>: <%= inspect Map.get(schema.params.update, k) %>,<% end %>
     })
 
     response = post_gql(conn, %{
@@ -37,6 +36,7 @@ defmodule <%= inspect context.web_module %>.Schema.Update<%= inspect schema.alia
     }
   end
 
+  @tag :authenticated
   test "errors when updating nonexistent post", %{conn: conn} do
     response = post_gql(conn, %{
       query: @query,

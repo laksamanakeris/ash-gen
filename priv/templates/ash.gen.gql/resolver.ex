@@ -10,8 +10,8 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
     <%= inspect context.alias %>.fetch_<%= schema.singular %>(id)
   end
 
-  def create(args, _info) do
-    case <%= inspect context.alias %>.create_<%= schema.singular %>(args) do
+  def create(%{<%= schema.singular %>: <%= schema.singular %>}, _info) do
+    case <%= inspect context.alias %>.create_<%= schema.singular %>(<%= schema.singular %>) do
       {:ok, <%= schema.singular %>} -> {:ok, <%= schema.singular %>}
       {:error, error} -> {:error, error}
     end

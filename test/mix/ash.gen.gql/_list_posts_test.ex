@@ -6,7 +6,6 @@ defmodule AshWeb.Schema.ListPostsTest do
     query ListPosts($filter: PostFilter, $orderBy: PostOrderBy) {
       posts(filter: $filter, orderBy: $orderBy) {
         id
-        email
       }
     }
   """

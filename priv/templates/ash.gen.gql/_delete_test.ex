@@ -10,6 +10,7 @@ defmodule <%= inspect context.web_module %>.Schema.Delete<%= inspect schema.alia
     }
   """
 
+  @tag :authenticated
   test "a <%= schema.singular %> can be deleted", %{conn: conn} do
     <%= schema.singular %> = insert(:<%= schema.singular %>)
     response = post_gql(conn, %{
@@ -26,6 +27,7 @@ defmodule <%= inspect context.web_module %>.Schema.Delete<%= inspect schema.alia
     }
   end
 
+  @tag :authenticated
   test "errors when deleting a nonexistent <%= schema.singular %>", %{conn: conn} do
     response = post_gql(conn, %{
       query: @query,

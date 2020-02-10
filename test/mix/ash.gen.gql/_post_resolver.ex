@@ -10,8 +10,8 @@ defmodule AshWeb.Schema.PostResolver do
     Blog.fetch_post(id)
   end
 
-  def create(args, _info) do
-    case Blog.create_post(args) do
+  def create(%{post: post}, _info) do
+    case Blog.create_post(post) do
       {:ok, post} -> {:ok, post}
       {:error, error} -> {:error, error}
     end

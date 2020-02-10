@@ -13,6 +13,7 @@ defmodule AshWeb.Schema.UpdatePostTest do
     }
   """
 
+  @tag :authenticated
   test "a post can be updated", %{conn: conn} do
     post = insert(:post)
     post_params = params_for(:post, %{
@@ -41,6 +42,7 @@ defmodule AshWeb.Schema.UpdatePostTest do
     }
   end
 
+  @tag :authenticated
   test "errors when updating nonexistent post", %{conn: conn} do
     response = post_gql(conn, %{
       query: @query,

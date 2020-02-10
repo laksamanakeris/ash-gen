@@ -10,6 +10,7 @@ defmodule AshWeb.Schema.DeletePostTest do
     }
   """
 
+  @tag :authenticated
   test "a post can be deleted", %{conn: conn} do
     post = insert(:post)
     response = post_gql(conn, %{
@@ -26,6 +27,7 @@ defmodule AshWeb.Schema.DeletePostTest do
     }
   end
 
+  @tag :authenticated
   test "errors when deleting a nonexistent post", %{conn: conn} do
     response = post_gql(conn, %{
       query: @query,
