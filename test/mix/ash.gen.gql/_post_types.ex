@@ -2,7 +2,7 @@ defmodule AshWeb.Schema.PostTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Ecto, repo: App.Repo
 
-  import Absinthe.Resolution.Helpers, only: [dataloader: 1]
+  import Absinthe.Resolution.Helpers
 
   alias AshWeb.Schema.PostResolver
 

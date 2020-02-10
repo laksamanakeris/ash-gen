@@ -2,7 +2,7 @@ defmodule <%= inspect gql.schema_alias %>Types do
   use Absinthe.Schema.Notation
   use Absinthe.Ecto, repo: App.Repo<%= if Enum.count(schema.assocs) > 0 do %>
 
-  import Absinthe.Resolution.Helpers, only: [dataloader: 1]<% end %>
+  import Absinthe.Resolution.Helpers<% end %>
 
   alias <%= inspect gql.schema_alias %>Resolver
 

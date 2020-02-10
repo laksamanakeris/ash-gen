@@ -4,7 +4,6 @@ defmodule Mix.Tasks.Ash.Gen.SchemaTest do
   use ExUnit.Case
   import MixHelper
   alias Mix.Tasks.Ash.Gen
-  # alias Mix.Ash.Schema
 
   setup do
     Mix.Task.clear()

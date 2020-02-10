@@ -37,8 +37,12 @@ defmodule Mix.Tasks.Ash.Gen.Gql do
   def files_to_be_generated(%Gql{} = gql) do
     [
       {:eex, "resolver.ex", gql.resolver_file},
-      {:eex, "resolver_test.ex", gql.resolver_test_file},
-      {:eex, "types.ex", gql.types_file}
+      {:eex, "types.ex", gql.types_file},
+      {:eex, "_create_test.ex", gql.create_test_file},
+      {:eex, "_delete_test.ex", gql.delete_test_file},
+      {:eex, "_get_test.ex", gql.get_test_file},
+      {:eex, "_list_test.ex", gql.list_test_file},
+      {:eex, "_update_test.ex", gql.update_test_file},
     ]
   end
 
@@ -46,7 +50,6 @@ defmodule Mix.Tasks.Ash.Gen.Gql do
   def copy_new_files(%Gql{} = gql, paths, binding) do
     files = files_to_be_generated(gql)
     Mix.Ash.copy_from(paths, "priv/templates/ash.gen.gql", binding, files)
-
     gql
   end
 
