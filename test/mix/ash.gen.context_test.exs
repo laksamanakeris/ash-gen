@@ -193,11 +193,13 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
         assert file =~ """
         defmodule Ash.BlogTest do
           use Ash.DataCase
+          import Ash.Factory
 
           alias Ash.Blog
 
           describe "posts" do
             alias Ash.Blog.Post
+            @invalid_attrs %{slug: nil, title: nil}
 
             test "list_posts/1 returns all posts" do
               posts = insert_list(3, :post)

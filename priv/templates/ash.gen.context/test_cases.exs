@@ -1,6 +1,7 @@
 
   describe "<%= schema.plural %>" do
     alias <%= inspect schema.module %>
+    @invalid_attrs <%= inspect for {key, _} <- schema.params.create, into: %{}, do: {key, nil} %>
 
     test "list_<%= schema.plural %>/1 returns all <%= schema.plural %>" do
       <%= schema.plural %> = insert_list(3, :<%= schema.singular %>)
