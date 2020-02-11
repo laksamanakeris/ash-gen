@@ -16,14 +16,17 @@ defmodule Mix.Tasks.Ash.Gen.SchemaTest do
 
       assert_file("lib/ash/blog/post.ex", fn file ->
         assert file =~ ~S"""
+          import Ecto.Query, warn: false
+          import Ash.Helpers.QueryHelpers, only: [filter_integer_with: 2]
+
           def filter_with(query, filter) do
             Enum.reduce(filter, query, fn
               {:title, title}, query ->
                 from q in query, where: ilike(q.title, ^"%#{title}%")
               {:word_count, word_count}, query ->
-                from q in query, where: ilike(q.word_count, ^"%#{word_count}%")
+                filter_integer_with(word_count, query)
               {:is_draft, is_draft}, query ->
-                from q in query, where: ilike(q.is_draft, ^"%#{is_draft}%")
+                from q in query, where: q.is_draft == ^is_draft
             end)
           end
         """
