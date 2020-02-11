@@ -1,5 +1,5 @@
 defmodule <%= inspect gql.schema_alias %>Resolver do
-  import <%= inspect context.base_module %>.Helpers.PolicyHelpers
+  import <%= inspect context.base_module %>.Helpers.PolicyHelpers, only: [get_current_user: 1]
   alias <%= inspect context.module %>
 
   def create(%{<%= schema.singular %>: <%= schema.singular %>}, _info) do

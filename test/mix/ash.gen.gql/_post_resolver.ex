@@ -1,5 +1,5 @@
 defmodule AshWeb.Schema.PostResolver do
-  import Ash.Helpers.PolicyHelpers
+  import Ash.Helpers.PolicyHelpers, only: [get_current_user: 1]
   alias Ash.Blog
 
   def create(%{post: post}, _info) do
