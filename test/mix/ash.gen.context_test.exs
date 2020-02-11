@@ -141,14 +141,10 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       end)
 
       assert_file("lib/ash/blog/_blog.ex", fn file ->
-        assert file =~ """
-          def list_posts(args) do
-            Post
-            |> QueryHelpers.build_query(args)
-            |> Repo.all
-        """
-        assert file =~ """
-          def list_posts(), do: Repo.all(Post)
+        assert file =~ ~S"""
+          def create_post(attrs \\ %{}) do
+            %Post{}
+            |> Post.changeset(attrs)
         """
         assert file =~ """
           def fetch_post(id), do: Repo.fetch(Post, id)
@@ -156,10 +152,11 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
         assert file =~ """
           def get_post!(id), do: Repo.get!(Post, id)
         """
-        assert file =~ ~S"""
-          def create_post(attrs \\ %{}) do
-            %Post{}
-            |> Post.changeset(attrs)
+        assert file =~ """
+          def list_posts(args) do
+            Post
+            |> QueryHelpers.build_query(args)
+            |> Repo.all
         """
         assert file =~ """
           def update_post(%Post{} = post, attrs) do

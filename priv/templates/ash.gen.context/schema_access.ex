@@ -2,30 +2,28 @@
   alias <%= inspect schema.module %>
 
   @doc """
-  Returns the list of <%= schema.plural %>.
+  Creates a <%= schema.singular %>.
 
   ## Examples
 
-      iex> list_<%= schema.plural %>()
-      [%<%= inspect schema.alias %>{}, ...]
+      iex> create_<%= schema.singular %>(%{field: value})
+      {:ok, %<%= inspect schema.alias %>{}}
 
-      iex> list_<%= schema.plural %>()
-      [%<%= inspect schema.alias %>{}, ...]
+      iex> create_<%= schema.singular %>(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
 
   """
-  def list_<%= schema.plural %>(args) do
-    <%= inspect schema.alias %>
-    |> QueryHelpers.build_query(args)
-    |> Repo.all
+  def create_<%= schema.singular %>(attrs \\ %{}) do
+    %<%= inspect schema.alias %>{}
+    |> <%= inspect schema.alias %>.changeset(attrs)
+    |> Repo.insert()
   end
-
-  def list_<%= schema.plural %>(), do: Repo.all(<%= inspect schema.alias %>)
 
   @doc """
   Gets a single <%= schema.singular %> and returns a tuple with result.
 
   ## Examples
-  s
+
       iex> fetch_<%= schema.singular %>(123)
       {:ok, %<%= inspect schema.alias %>{}}
 
@@ -52,21 +50,21 @@
   def get_<%= schema.singular %>!(id), do: Repo.get!(<%= inspect schema.alias %>, id)
 
   @doc """
-  Creates a <%= schema.singular %>.
+  Returns the list of <%= schema.plural %>.
 
   ## Examples
 
-      iex> create_<%= schema.singular %>(%{field: value})
-      {:ok, %<%= inspect schema.alias %>{}}
+      iex> list_<%= schema.plural %>()
+      [%<%= inspect schema.alias %>{}, ...]
 
-      iex> create_<%= schema.singular %>(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      iex> list_<%= schema.plural %>()
+      [%<%= inspect schema.alias %>{}, ...]
 
   """
-  def create_<%= schema.singular %>(attrs \\ %{}) do
-    %<%= inspect schema.alias %>{}
-    |> <%= inspect schema.alias %>.changeset(attrs)
-    |> Repo.insert()
+  def list_<%= schema.plural %>(args) do
+    <%= inspect schema.alias %>
+    |> QueryHelpers.build_query(args)
+    |> Repo.all
   end
 
   @doc """

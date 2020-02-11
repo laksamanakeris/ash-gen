@@ -24,7 +24,7 @@ defmodule Mix.Tasks.Ash.Gen.SchemaTest do
               {:title, title}, query ->
                 from q in query, where: ilike(q.title, ^"%#{title}%")
               {:word_count, word_count}, query ->
-                filter_integer_with(word_count, query)
+                filter_integer_with(:word_count, word_count, query)
               {:is_draft, is_draft}, query ->
                 from q in query, where: q.is_draft == ^is_draft
             end)
