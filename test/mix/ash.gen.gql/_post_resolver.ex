@@ -1,5 +1,5 @@
 defmodule AshWeb.Schema.PostResolver do
-  alias Ash.Accounts.User
+  import Ash.Helpers.PolicyHelpers
   alias Ash.Blog
 
   def create(%{post: post}, _info) do
@@ -18,7 +18,7 @@ defmodule AshWeb.Schema.PostResolver do
   end
 
   def update(%{id: id, post: post_params}, info) do
-    with %{current_user: %User{} = current_user} = info.context,
+    with {:ok, current_user} <- get_current_user(info),
     {:ok, post} <- Blog.fetch_post(id),
     :ok <- Blog.permit(:update_post, current_user, post) do
       Blog.update_post(post, post_params)
@@ -29,7 +29,7 @@ defmodule AshWeb.Schema.PostResolver do
   end
 
   def delete(%{id: id}, info) do
-    with %{current_user: %User{} = current_user} = info.context,
+    with {:ok, current_user} <- get_current_user(info),
     {:ok, post} <- Blog.fetch_post(id),
     :ok <- Blog.permit(:delete_post, current_user, post) do
       Blog.delete_post(post)
