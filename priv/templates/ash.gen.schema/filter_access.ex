@@ -7,7 +7,7 @@
       {:<%= k %>, <%= k %>}, query ->
         from q in query, where: q.<%= k %> == ^<%= k %><% :integer -> %>
       {:<%= k %>, <%= k %>}, query ->
-        filter_integer_with(<%= k %>, query)<% _ -> %>
+        filter_integer_with(:<%= k %>, <%= k %>, query)<% _ -> %>
       {:<%= k %>, <%= k %>}, query ->
         from q in query, where: ilike(q.<%= k %>, ^"%#{<%= k %>}%")<% end %><% end %>
     end)
