@@ -1,5 +1,5 @@
 defmodule AshWeb.Schema.PostResolver do
-  import Ash.Helpers.PolicyHelpers, only: [get_current_user: 1]
+  import Ash.Helpers.PolicyHelpers
   alias Ash.Blog
 
   def create(%{post: post}, _info) do
@@ -19,8 +19,8 @@ defmodule AshWeb.Schema.PostResolver do
 
   def update(%{id: id, post: post_params}, info) do
     with {:ok, current_user} <- get_current_user(info),
-    {:ok, post} <- Blog.fetch_post(id),
-    :ok <- Blog.permit(:update_post, current_user, post) do
+    :ok <- Blog.permit(:update_post, current_user, dirty_id(id)),
+    {:ok, post} <- Blog.fetch_post(id) do
       Blog.update_post(post, post_params)
     else
       {:error, error} -> {:error, error}
@@ -30,8 +30,8 @@ defmodule AshWeb.Schema.PostResolver do
 
   def delete(%{id: id}, info) do
     with {:ok, current_user} <- get_current_user(info),
-    {:ok, post} <- Blog.fetch_post(id),
-    :ok <- Blog.permit(:delete_post, current_user, post) do
+    :ok <- Blog.permit(:delete_post, current_user, dirty_id(id)),
+    {:ok, post} <- Blog.fetch_post(id) do
       Blog.delete_post(post)
     else
       {:error, error} -> {:error, error}
