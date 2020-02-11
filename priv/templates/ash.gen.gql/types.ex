@@ -21,8 +21,9 @@ defmodule <%= inspect gql.schema_alias %>Types do
 
   @desc "<%= inspect schema.alias %> filter"
   input_object :<%= schema.singular %>_filter do
-    field :id, :id<%= for {k, v} <- schema.attrs do %>
-    field <%= inspect k %>, <%= inspect v %><% end %>
+    field :id, :id<%= for {k, v} <- schema.attrs do %><%= case v do %><% :integer -> %>
+    field <%= inspect k %>, :integer_filter<% _ -> %>
+    field <%= inspect k %>, <%= inspect v %><% end %><% end %>
   end
 
   @desc "<%= inspect schema.alias %> ordering"

@@ -27,7 +27,7 @@ defmodule AshWeb.Schema.PostTypes do
   input_object :post_filter do
     field :id, :id
     field :title, :string
-    field :word_count, :integer
+    field :word_count, :integer_filter
     field :is_draft, :boolean
   end
 
