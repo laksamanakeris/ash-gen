@@ -2,19 +2,19 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
   alias <%= inspect context.base_module %>.Accounts.User
   alias <%= inspect context.module %>
 
-  def all(args, _info) do
-    {:ok, <%= inspect context.alias %>.list_<%= schema.plural %>(args)}
+  def create(%{<%= schema.singular %>: <%= schema.singular %>}, _info) do
+    case <%= inspect context.alias %>.create_<%= schema.singular %>(<%= schema.singular %>) do
+      {:ok, <%= schema.singular %>} -> {:ok, <%= schema.singular %>}
+      {:error, error} -> {:error, error}
+    end
   end
 
   def find(%{id: id}, _info) do
     <%= inspect context.alias %>.fetch_<%= schema.singular %>(id)
   end
 
-  def create(%{<%= schema.singular %>: <%= schema.singular %>}, _info) do
-    case <%= inspect context.alias %>.create_<%= schema.singular %>(<%= schema.singular %>) do
-      {:ok, <%= schema.singular %>} -> {:ok, <%= schema.singular %>}
-      {:error, error} -> {:error, error}
-    end
+  def all(args, _info) do
+    {:ok, <%= inspect context.alias %>.list_<%= schema.plural %>(args)}
   end
 
   def update(%{id: id, <%= schema.singular %>: <%= schema.singular %>_params}, info) do

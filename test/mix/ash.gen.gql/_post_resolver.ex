@@ -2,19 +2,19 @@ defmodule AshWeb.Schema.PostResolver do
   alias Ash.Accounts.User
   alias Ash.Blog
 
-  def all(args, _info) do
-    {:ok, Blog.list_posts(args)}
+  def create(%{post: post}, _info) do
+    case Blog.create_post(post) do
+      {:ok, post} -> {:ok, post}
+      {:error, error} -> {:error, error}
+    end
   end
 
   def find(%{id: id}, _info) do
     Blog.fetch_post(id)
   end
 
-  def create(%{post: post}, _info) do
-    case Blog.create_post(post) do
-      {:ok, post} -> {:ok, post}
-      {:error, error} -> {:error, error}
-    end
+  def all(args, _info) do
+    {:ok, Blog.list_posts(args)}
   end
 
   def update(%{id: id, post: post_params}, info) do
