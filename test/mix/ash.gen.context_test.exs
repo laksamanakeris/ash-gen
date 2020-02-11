@@ -198,16 +198,6 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
             alias Ash.Blog.Post
             @invalid_attrs %{slug: nil, title: nil}
 
-            test "list_posts/1 returns all posts" do
-              posts = insert_list(3, :post)
-              assert Blog.list_posts() == posts
-            end
-
-            test "get_post!/1 returns the post with given id" do
-              post = insert(:post)
-              assert Blog.get_post!(post.id) == post
-            end
-
             test "create_post/1 with valid data creates a post" do
               post_params = params_for(:post)
 
@@ -218,6 +208,16 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
 
             test "create_post/1 with invalid data returns error changeset" do
               assert {:error, %Ecto.Changeset{}} = Blog.create_post(@invalid_attrs)
+            end
+
+            test "get_post!/1 returns the post with given id" do
+              post = insert(:post)
+              assert Blog.get_post!(post.id) == post
+            end
+
+            test "list_posts/1 returns all posts" do
+              posts = insert_list(3, :post)
+              assert Blog.list_posts() == posts
             end
 
             test "update_post/2 with valid data updates the post" do
