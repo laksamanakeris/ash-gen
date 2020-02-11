@@ -4,6 +4,8 @@ Set of opinionated generators for Phoenix & Absinthe. Creates contexts with
 dataloader and a authorization policy as well as resolver, types and tests
 for graphql resources.
 
+Takes similar arguments to `mix phx.gen.context` and creates a graphgql resource. Untested on anything other than simple types lieke strings, integers and booleans.
+
 
 ## Mix Ash Context & Schema
 
