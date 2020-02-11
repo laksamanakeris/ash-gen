@@ -32,8 +32,8 @@ defmodule Mix.Ash.Context do
     basename  = Path.basename(basedir)
     dir       = Mix.Ash.context_lib_path(ctx_app, basedir)
     file      = dir <> "/_#{basename}.ex"
-    loader_file = dir <> "/_loader.ex"
-    policy_file = dir <> "/_policy.ex"
+    loader_file = dir <> "/_#{basename}_loader.ex"
+    policy_file = dir <> "/_#{basename}_policy.ex"
     test_dir  = Mix.Ash.context_test_path(ctx_app, basedir)
     test_file = test_dir <> "_test.exs"
     generate? = Keyword.get(opts, :context, true)

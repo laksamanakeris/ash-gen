@@ -34,8 +34,8 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
 
       assert String.ends_with?(context.dir, "lib/ash/blog")
       assert String.ends_with?(context.file, "lib/ash/blog/_blog.ex")
-      assert String.ends_with?(context.loader_file, "lib/ash/blog/_loader.ex")
-      assert String.ends_with?(context.policy_file, "lib/ash/blog/_policy.ex")
+      assert String.ends_with?(context.loader_file, "lib/ash/blog/_blog_loader.ex")
+      assert String.ends_with?(context.policy_file, "lib/ash/blog/_blog_policy.ex")
       assert String.ends_with?(context.test_file, "test/ash/blog_test.exs")
       assert String.ends_with?(context.schema.file, "lib/ash/blog/post.ex")
     end)
@@ -64,8 +64,8 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
 
       assert String.ends_with?(context.dir, "lib/ash/site/blog")
       assert String.ends_with?(context.file, "lib/ash/site/blog/_blog.ex")
-      assert String.ends_with?(context.loader_file, "lib/ash/site/blog/_loader.ex")
-      assert String.ends_with?(context.policy_file, "lib/ash/site/blog/_policy.ex")
+      assert String.ends_with?(context.loader_file, "lib/ash/site/blog/_blog_loader.ex")
+      assert String.ends_with?(context.policy_file, "lib/ash/site/blog/_blog_policy.ex")
       assert String.ends_with?(context.test_file, "test/ash/site/blog_test.exs")
       assert String.ends_with?(context.schema.file, "lib/ash/site/blog/post.ex")
     end)
@@ -173,7 +173,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
         """
       end)
 
-      assert_file("lib/ash/blog/_loader.ex", fn file ->
+      assert_file("lib/ash/blog/_blog_loader.ex", fn file ->
         assert file =~ """
         defmodule Ash.Blog.Loader do
           def data do
@@ -181,7 +181,7 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
         """
       end)
 
-      assert_file("lib/ash/blog/_policy.ex", fn file ->
+      assert_file("lib/ash/blog/_blog_policy.ex", fn file ->
         assert file =~ "defmodule Ash.Blog.Policy do"
         assert file =~ "Authorize a user's ability to call Blog actions."
       end)
