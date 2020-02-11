@@ -17,7 +17,7 @@ defmodule Mix.Tasks.Ash.Gen.SchemaTest do
       assert_file("lib/ash/blog/post.ex", fn file ->
         assert file =~ ~S"""
           import Ecto.Query, warn: false
-          import Ash.Helpers.QueryHelpers, only: [filter_integer_with: 2]
+          import Ash.Helpers.QueryHelpers
 
           def filter_with(query, filter) do
             Enum.reduce(filter, query, fn

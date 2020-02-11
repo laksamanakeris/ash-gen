@@ -1,6 +1,6 @@
 
   import Ecto.Query, warn: false
-  import <%= inspect ctx.base %>.Helpers.QueryHelpers, only: [filter_integer_with: 2]
+  import <%= inspect ctx.base %>.Helpers.QueryHelpers
 
   def filter_with(query, filter) do
     Enum.reduce(filter, query, fn<%= for {k, v} <- schema.attrs do %><%= case v do %><% :boolean -> %>

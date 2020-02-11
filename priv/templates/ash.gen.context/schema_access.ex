@@ -61,7 +61,7 @@
       [%<%= inspect schema.alias %>{}, ...]
 
   """
-  def list_<%= schema.plural %>(args) do
+  def list_<%= schema.plural %>(args \\ %{}) do
     <%= inspect schema.alias %>
     |> QueryHelpers.build_query(args)
     |> Repo.all

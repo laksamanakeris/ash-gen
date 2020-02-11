@@ -152,8 +152,8 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
         assert file =~ """
           def get_post!(id), do: Repo.get!(Post, id)
         """
-        assert file =~ """
-          def list_posts(args) do
+        assert file =~ ~S"""
+          def list_posts(args \\ %{}) do
             Post
             |> QueryHelpers.build_query(args)
             |> Repo.all
