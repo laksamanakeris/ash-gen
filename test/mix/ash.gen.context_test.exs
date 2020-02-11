@@ -190,9 +190,65 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       end)
 
       assert_file("test/ash/blog_test.exs", fn file ->
-        assert file =~ "use Ash.DataCase"
-        assert file =~ "describe \"posts\" do"
-        assert file =~ "def post_fixture(attrs \\\\ %{})"
+        assert file =~ """
+        defmodule Ash.BlogTest do
+          use Ash.DataCase
+
+          alias Ash.Blog
+
+          describe "posts" do
+            alias Ash.Blog.Post
+
+            test "list_posts/1 returns all posts" do
+              posts = insert_list(3, :post)
+              assert Blog.list_posts() == posts
+            end
+
+            test "get_post!/1 returns the post with given id" do
+              post = insert(:post)
+              assert Blog.get_post!(post.id) == post
+            end
+
+            test "create_post/1 with valid data creates a post" do
+              post_params = params_for(:post)
+
+              assert {:ok, %Post{} = post} = Blog.create_post(post_params)
+              assert post.slug == post_params.slug
+              assert post.title == post_params.title
+            end
+
+            test "create_post/1 with invalid data returns error changeset" do
+              assert {:error, %Ecto.Changeset{}} = Blog.create_post(@invalid_attrs)
+            end
+
+            test "update_post/2 with valid data updates the post" do
+              post = insert(:post)
+              post_params = params_for(:post, %{slug: "some updated slug", title: "some updated title"})
+
+              assert {:ok, %Post{} = post} = Blog.update_post(post, post_params)
+              assert post.slug == post_params.slug
+              assert post.title == post_params.title
+            end
+
+            test "update_post/2 with invalid data returns error changeset" do
+              post = insert(:post)
+              assert {:error, %Ecto.Changeset{}} = Blog.update_post(post, @invalid_attrs)
+              assert post == Blog.get_post!(post.id)
+            end
+
+            test "delete_post/1 deletes the post" do
+              post = insert(:post)
+              assert {:ok, %Post{}} = Blog.delete_post(post)
+              assert_raise Ecto.NoResultsError, fn -> Blog.get_post!(post.id) end
+            end
+
+            test "change_post/1 returns a post changeset" do
+              post = insert(:post)
+              assert %Ecto.Changeset{} = Blog.change_post(post)
+            end
+          end
+        end
+        """
       end)
 
       assert [path] = Path.wildcard("priv/repo/migrations/*_create_posts.exs")
@@ -216,7 +272,6 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       assert_file("test/ash/blog_test.exs", fn file ->
         assert file =~ "use Ash.DataCase"
         assert file =~ "describe \"comments\" do"
-        assert file =~ "def comment_fixture(attrs \\\\ %{})"
       end)
 
       assert [path] = Path.wildcard("priv/repo/migrations/*_create_comments.exs")
@@ -262,7 +317,6 @@ defmodule Mix.Tasks.Ash.Gen.ContextTest do
       assert_file("test/ash/blog_test.exs", fn file ->
         assert file =~ "use Ash.DataCase"
         assert file =~ "describe \"posts\" do"
-        assert file =~ "def post_fixture(attrs \\\\ %{})"
       end)
 
       assert Path.wildcard("priv/repo/migrations/*_create_posts.exs") == []
