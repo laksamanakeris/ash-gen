@@ -10,7 +10,7 @@ defmodule <%= inspect gql.schema_alias %>Types do
   object :<%= schema.singular %> do
     field :id, :id<%= for {k, v} <- schema.attrs do %>
     field <%= inspect k %>, <%= inspect v %><% end %><%= for {n, _i, _m, s} <- schema.assocs do %>
-    field <%= inspect n %>, <%= inspect s %>, resolve: dataloader(<%= inspect context.alias %>)<% end %>
+    field <%= inspect n %>, :<%= String.replace_trailing(Atom.to_string(s), "s", "") %>, resolve: dataloader(<%= inspect context.alias %>)<% end %>
   end
 
   @desc "<%= inspect schema.alias %> parameters"

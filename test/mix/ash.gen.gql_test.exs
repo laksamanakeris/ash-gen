@@ -38,7 +38,7 @@ defmodule Mix.Tasks.Ash.Gen.GqlTest do
     {:ok, expected_update_post_test} = File.read("test/mix/ash.gen.gql/_update_post_test.ex")
 
     in_tmp_project(config.test, fn ->
-      Gen.Gql.run(~w(Blog Post posts title:string word_count:integer is_draft:boolean author:references:post))
+      Gen.Gql.run(~w(Blog Post posts title:string word_count:integer is_draft:boolean author:references:users))
 
       assert_file("lib/ash_web/schema/post/post_types.ex", fn file ->
         assert file =~ expected_post_types

@@ -12,7 +12,7 @@ defmodule AshWeb.Schema.PostTypes do
     field :title, :string
     field :word_count, :integer
     field :is_draft, :boolean
-    field :author, :author, resolve: dataloader(Blog)
+    field :author, :user, resolve: dataloader(Blog)
   end
 
   @desc "Post parameters"
