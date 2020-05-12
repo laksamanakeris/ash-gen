@@ -24,7 +24,7 @@ defmodule AshWeb.Schema.PostResolver do
       Blog.update_post(post, post_params)
     else
       {:error, error} -> {:error, error}
-      _ -> {:error, "Something went wrong"}
+      _ -> {:error, :internal_server_error}
     end
   end
 
@@ -35,7 +35,7 @@ defmodule AshWeb.Schema.PostResolver do
       Blog.delete_post(post)
     else
       {:error, error} -> {:error, error}
-      _ -> {:error, "Something went wrong"}
+      _ -> {:error, :internal_server_error}
     end
   end
 end

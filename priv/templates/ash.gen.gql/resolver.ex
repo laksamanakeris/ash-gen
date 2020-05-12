@@ -24,7 +24,7 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
       <%= inspect context.alias %>.update_<%= schema.singular %>(<%= schema.singular %>, <%= schema.singular %>_params)
     else
       {:error, error} -> {:error, error}
-      _ -> {:error, "Something went wrong"}
+      _ -> {:error, :internal_server_error}
     end
   end
 
@@ -35,7 +35,7 @@ defmodule <%= inspect gql.schema_alias %>Resolver do
       <%= inspect context.alias %>.delete_<%= schema.singular %>(<%= schema.singular %>)
     else
       {:error, error} -> {:error, error}
-      _ -> {:error, "Something went wrong"}
+      _ -> {:error, :internal_server_error}
     end
   end
 end
