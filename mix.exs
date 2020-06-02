@@ -23,7 +23,7 @@ defmodule Ash.MixProject do
     [
       {:phoenix, "~> 1.5.0"},
       {:jason, "~> 1.0"},
-      {:ecto, "~> 3.4.4"}
+      {:ecto, "~> 3.0"}
     ]
   end
 end
