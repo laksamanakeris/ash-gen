@@ -21,9 +21,9 @@ defmodule Ash.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:phoenix, "~> 1.4.0"},
-      {:jason, "~> 1.1"},
-      {:ecto, "~> 3.3.1"}
+      {:phoenix, "~> 1.5.0"},
+      {:jason, "~> 1.0"},
+      {:ecto, "~> 3.4.4"}
     ]
   end
 end
